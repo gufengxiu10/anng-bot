@@ -1,0 +1,8 @@
+/music
+/vendor
+.env
+/test
+/im
+*.lock
+*.log
+test.*
