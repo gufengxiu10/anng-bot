@@ -22,23 +22,6 @@ class Table
         return $this;
     }
 
-    public function set($key, $data, $append = false)
-    {
-        if ($append === true) {
-            $d = $this->table->get($key);
-            if (!empty($d)) {
-                foreach ($data as $k => &$v) {
-                }
-            }
-        }
-        return $this->table->set($key, $data);
-    }
-
-    public function get($key)
-    {
-        return $this->table->get($key);
-    }
-
     public function exists($key)
     {
         return $this->table->exists($key);
@@ -53,5 +36,10 @@ class Table
     public function getinstance()
     {
         return $this->table;
+    }
+
+    public function __call($method, $args)
+    {
+        return call_user_func_array([$this->table, $method], $args);
     }
 }

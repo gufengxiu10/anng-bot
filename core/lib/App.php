@@ -15,6 +15,7 @@ use ReflectionAttribute;
 use ReflectionClass;
 use Swoole\Process\Pool;
 use Swoole\Table;
+use Swoole\Timer;
 use Symfony\Component\Finder\Finder;
 
 class App
@@ -66,7 +67,7 @@ class App
         // swoole_set_process_name('anng');
         $pm = new Manager();
         $this->init();
-        $pm->addBatch(1, function (Pool $pool, int $workerId) {
+        $pm->addBatch(3, function (Pool $pool, int $workerId) {
             $this->server($pool, $workerId);
         });
         $pm->setIPCType(SWOOLE_IPC_UNIXSOCK);
@@ -92,32 +93,21 @@ class App
 
         $this->server = new Server('0.0.0.0', 9502, false, true);
         $this->server->handle('/', function ($request, $ws) use ($pool, $workerId) {
+            // dump(get_class_methods());
+            if (!FacadeTable::exists('fd:' . $workerId . $request->fd)) {
+                FacadeTable::set('fd:' .  $workerId . $request->fd, ['key' => $request->fd]);
+            }
+
+            dump(get_class_methods($pool));
+            // dump(spl_object_id($ws) . '_' . $workerId . '_' . $request->fd);
             $ws->upgrade();
             while (true) {
                 $frame = $ws->recv();
-                if ($frame === '') {
-                    $ws->close();
-                    break;
-                } else if ($frame === false) {
-                    echo "error : " . swoole_last_error() . "\n";
-                    break;
-                } else {
-                    if ($frame->data == 'close' || get_class($frame) === Swoole\WebSocket\CloseFrame::class) {
-                        $ws->close();
-                        return;
-                    }
-
-                    dump($frame->fd);
-                    $ws->push($frame->fd);
-                    // dump($workerId . '_' . $frame->fd . '_' . $frame->data);
-                    // $this->ico('WebSocket', [
-                    //     'ws' => $ws,
-                    //     'request' => $request,
-                    //     'frame' => $frame,
-                    //     'server' => $this->server,
-                    //     'pool' => $pool,
-                    //     'id' => $workerId,
-                    // ]);
+                if ($workerId ==  0) {
+                    Timer::tick(1000, function () {
+                        $table = FacadeTable::getinstance();
+                        dump($table->count());
+                    });
                 }
             }
         });
