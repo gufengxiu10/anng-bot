@@ -198,7 +198,7 @@ class Container implements ContainerInterface
         return $this->make($name);
     }
 
-    public function has($name)
+    public function has($name): bool
     {
         return isset($this->instances[$name]);
     }

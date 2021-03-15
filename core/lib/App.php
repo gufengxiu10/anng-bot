@@ -7,16 +7,13 @@ use Anng\lib\facade\Config;
 use Anng\lib\facade\Crontab;
 use Anng\lib\facade\Db;
 use Anng\lib\facade\Env;
-use Anng\lib\facade\Messages;
 use Anng\lib\facade\Table as FacadeTable;
-
-use Co\Http\Server;
-use ReflectionAttribute;
-use ReflectionClass;
+use Swoole\Coroutine\Http\Server;
+use Swoole\Coroutine\Server\Connection;
+use Swoole\Coroutine\Socket;
 use Swoole\Process\Pool;
 use Swoole\Table;
 use Swoole\Timer;
-use Symfony\Component\Finder\Finder;
 
 class App
 {
@@ -56,8 +53,8 @@ class App
 
         //创建共享内存
         FacadeTable::create([
-            ['key', Table::TYPE_STRING, 64],
-            ['data', Table::TYPE_STRING, 64],
+            ['address', Table::TYPE_STRING, 64],
+            ['port', Table::TYPE_STRING, 64],
         ]);
     }
 
@@ -65,13 +62,13 @@ class App
     {
         //为进程定义名字
         // swoole_set_process_name('anng');
-        $pm = new Manager();
+        $this->pm = new Manager();
         $this->init();
-        $pm->addBatch(3, function (Pool $pool, int $workerId) {
+        $this->pm->addBatch(3, function (Pool $pool, int $workerId) {
             $this->server($pool, $workerId);
         });
-        $pm->setIPCType(SWOOLE_IPC_UNIXSOCK);
-        $pm->start();
+        $this->pm->setIPCType(SWOOLE_IPC_UNIXSOCK);
+        $this->pm->start();
     }
 
     private function server($pool, $workerId)
@@ -92,21 +89,29 @@ class App
         $this->loadAnnotation();
 
         $this->server = new Server('0.0.0.0', 9502, false, true);
-        $this->server->handle('/', function ($request, $ws) use ($pool, $workerId) {
-            // dump(get_class_methods());
+        $this->server->handle('/', function ($request, $response) use ($pool, $workerId) {
+            $this->pm->ki[] = $response;
             if (!FacadeTable::exists('fd:' . $workerId . $request->fd)) {
-                FacadeTable::set('fd:' .  $workerId . $request->fd, ['key' => $request->fd]);
+                $paeer = $response->socket->getpeername();
+                FacadeTable::set('fd:' .  $workerId . $request->fd, ['address' => $paeer['address'], 'port' => $paeer['port']]);
             }
 
-            dump(get_class_methods($pool));
-            // dump(spl_object_id($ws) . '_' . $workerId . '_' . $request->fd);
-            $ws->upgrade();
+            // dump($response->socket);
+            // dump($response->socket->getpeername());
+            // dump(get_class_methods(response->socket));
+            // dump(get_class_methods($response));
+            // dump(get_class_methods($pool));
+            // dump($socket);
+            $response->upgrade();
+
             while (true) {
-                $frame = $ws->recv();
+                $data = $response->recv();
                 if ($workerId ==  0) {
-                    Timer::tick(1000, function () {
-                        $table = FacadeTable::getinstance();
-                        dump($table->count());
+                    Timer::tick(1000, function () use ($response) {
+                        foreach (FacadeTable::getInstance() as $key => $value) {
+                            $socket = new Socket(2, 1, 0);
+                            $f = $socket->bind($value['address'], $value['port']);
+                        }
                     });
                 }
             }
