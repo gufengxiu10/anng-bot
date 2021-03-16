@@ -7,6 +7,7 @@ use Anng\lib\facade\Config;
 use Anng\lib\facade\Crontab;
 use Anng\lib\facade\Db;
 use Anng\lib\facade\Env;
+use Anng\lib\facade\Reflection;
 use Anng\lib\facade\Table as FacadeTable;
 use Swoole\Coroutine\Http\Server;
 use Swoole\Coroutine\Server\Connection;
@@ -14,6 +15,7 @@ use Swoole\Coroutine\Socket;
 use Swoole\Process\Pool;
 use Swoole\Table;
 use Swoole\Timer;
+use Swoole\WebSocket\Server as WebSocketServer;
 
 class App
 {
@@ -60,62 +62,43 @@ class App
 
     public function start()
     {
+        $this->init();
+        $this->server();
         //为进程定义名字
         // swoole_set_process_name('anng');
-        $this->pm = new Manager();
-        $this->init();
-        $this->pm->addBatch(3, function (Pool $pool, int $workerId) {
-            $this->server($pool, $workerId);
-        });
-        $this->pm->setIPCType(SWOOLE_IPC_UNIXSOCK);
-        $this->pm->start();
+        // $this->pm = new Manager();
+        // 
+        // $this->pm->addBatch(3, function (Pool $pool, int $workerId) {
+        //     $this->server($pool, $workerId);
+        // });
+        // $this->pm->setIPCType(SWOOLE_IPC_UNIXSOCK);
+        // $this->pm->start();
     }
 
-    private function server($pool, $workerId)
+    private function server()
     {
         \Swoole\Coroutine::set([
             'hook_flags' => SWOOLE_HOOK_CURL
         ]);
 
-        //启动任务调度
-        if ($workerId == 0) {
-            $this->crontabStart($pool, $workerId);
-        }
+        $this->server = new WebSocketServer('0.0.0.0', 9502);
+        $this->server->set([
+            'worker_num' => 3
+        ]);
 
-        //创建连接池
-        $this->createMysqlPool();
+        //进程启动
+        $this->server->on('WorkerStart', [$this->ico('WorkerStart'), 'run']);
+        //有新连接进入
+        $this->server->on('Connect', [$this->ico('Connect'), 'run']);
+        //握手成功后调用
+        $this->server->on('open', [$this->ico('Open'), 'run']);
+        //接收客户端数据时触发
+        $this->server->on('message', [$this->ico('Message'), 'run']);
 
-        //加载controller的全部注解
-        $this->loadAnnotation();
-
-        $this->server = new Server('0.0.0.0', 9502, false, true);
-        $this->server->handle('/', function ($request, $response) use ($pool, $workerId) {
-            $this->pm->ki[] = $response;
-            if (!FacadeTable::exists('fd:' . $workerId . $request->fd)) {
-                $paeer = $response->socket->getpeername();
-                FacadeTable::set('fd:' .  $workerId . $request->fd, ['address' => $paeer['address'], 'port' => $paeer['port']]);
-            }
-
-            // dump($response->socket);
-            // dump($response->socket->getpeername());
-            // dump(get_class_methods(response->socket));
-            // dump(get_class_methods($response));
-            // dump(get_class_methods($pool));
-            // dump($socket);
-            $response->upgrade();
-
-            while (true) {
-                $data = $response->recv();
-                if ($workerId ==  0) {
-                    Timer::tick(1000, function () use ($response) {
-                        foreach (FacadeTable::getInstance() as $key => $value) {
-                            $socket = new Socket(2, 1, 0);
-                            $f = $socket->bind($value['address'], $value['port']);
-                        }
-                    });
-                }
-            }
+        $this->server->on('close', function ($ser, $fd) {
+            echo "client {$fd} closed\n";
         });
+
         $this->server->start();
     }
 
@@ -146,20 +129,15 @@ class App
     }
 
 
-    public function ico($method, $argc)
+    public function ico($method, $argc = [])
     {
         $className = "\\Anng\\event\\" . $method;
-        Reflection::setDefaultMethod('run', $argc)
-            ->instance($className, $argc);
+        return Reflection::instance($className, $argc);
     }
 
-    public function createTable()
+    public function loadAnnotation()
     {
-        $table = new Table(1024);
-        $table->column('id', Table::TYPE_INT, 4);
-        $table->column('fd', Table::TYPE_INT, 64);
-        $table->create();
-        return $table;
+        Annotations::load()->run();
     }
 
     /**
@@ -191,15 +169,5 @@ class App
         }
 
         return $this->rootPath;
-    }
-
-    public function getFd()
-    {
-        return $this->fd;
-    }
-
-    public function loadAnnotation()
-    {
-        Annotations::load()->run();
     }
 }
