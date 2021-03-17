@@ -9,6 +9,7 @@ use Anng\lib\facade\Db;
 use Anng\lib\facade\Env;
 use Anng\lib\facade\Reflection;
 use Anng\lib\facade\Table as FacadeTable;
+use ReflectionException;
 use Swoole\Coroutine\Http\Server;
 use Swoole\Coroutine\Server\Connection;
 use Swoole\Coroutine\Socket;
@@ -53,26 +54,22 @@ class App
         //加载ENV文件
         Env::setPath($this->getEnv())->loading();
 
-        //创建共享内存
-        FacadeTable::create([
-            ['address', Table::TYPE_STRING, 64],
-            ['port', Table::TYPE_STRING, 64],
+        //创建fd共享内存
+        FacadeTable::create('fd', [
+            ['fd', Table::TYPE_INT, 64],
+            ['workerId', Table::TYPE_INT, 64],
         ]);
     }
 
     public function start()
     {
         $this->init();
-        $this->server();
-        //为进程定义名字
-        // swoole_set_process_name('anng');
-        // $this->pm = new Manager();
-        // 
-        // $this->pm->addBatch(3, function (Pool $pool, int $workerId) {
-        //     $this->server($pool, $workerId);
-        // });
-        // $this->pm->setIPCType(SWOOLE_IPC_UNIXSOCK);
-        // $this->pm->start();
+        try {
+            $this->server();
+            // ReflectionException
+        } catch (ReflectionException $th) {
+            dump('反射失败：' . $th->getMessage());
+        }
     }
 
     private function server()
@@ -94,10 +91,8 @@ class App
         $this->server->on('open', [$this->ico('Open'), 'run']);
         //接收客户端数据时触发
         $this->server->on('message', [$this->ico('Message'), 'run']);
-
-        $this->server->on('close', function ($ser, $fd) {
-            echo "client {$fd} closed\n";
-        });
+        //断开连接
+        $this->server->on('close', [$this->ico('Close'), 'run']);
 
         $this->server->start();
     }

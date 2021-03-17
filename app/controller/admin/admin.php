@@ -2,9 +2,7 @@
 
 namespace app\controller\admin;
 
-use Anng\lib\annotations\module\Cq;
 use Anng\lib\annotations\module\Messages;
-use app\controller\Test;
 
 class Admin
 {
@@ -14,7 +12,7 @@ class Admin
         dump('list1');
     }
 
-    #[Messages(['key' => '你不好', 'alias' => ['ki']])]
+    #[Messages(['key' => '来一图', 'alias' => ['ki']])]
     public function list2()
     {
         dump('list2');

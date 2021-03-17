@@ -8,38 +8,60 @@ use Swoole\Table as SwooleTable;
 
 class Table
 {
-    private SwooleTable $table;
-    private $columns;
+    private string $name;
+    private array $columns;
+    private array $tables;
 
-    public function create($columns)
+    public function create($name,  $columns, $size = 1024)
     {
-        $this->columns = $columns;
-        $this->table = new SwooleTable(1024);
+        $this->tables[$name] = new SwooleTable($size);
         foreach ($columns as $column) {
-            $this->table->column($column[0], $column[1], $column[2]);
+            $this->tables[$name]->column($column[0], $column[1], $column[2]);
         }
-        $this->table->create();
+        $this->tables[$name]->create();
+        $this->columns[$name] = $columns;
         return $this;
     }
 
-    public function exists($key)
+    /**
+     * @name: 
+     * @param {*} $name
+     * @author: ANNG
+     * @todo: 
+     * @Date: 2021-03-17 09:48:18
+     * @return {*}
+     */
+    public function name($name)
     {
-        return $this->table->exists($key);
+        $this->name = $name;
+        return $this;
     }
 
-    public function del($key)
+    /**
+     * @name: 
+     * @param {*}
+     * @author: ANNG
+     * @todo: 
+     * @Date: 2021-03-17 09:48:22
+     * @return {*}
+     */
+    public function exists($name): bool
     {
-        return $this->table->del($key);
+        return isset($this->tables[$name]) ? true : false;
     }
 
-
-    public function getinstance()
+    public function getinstance($name = '')
     {
-        return $this->table;
+        if (empty($name)) {
+            return $this->tables;
+        }
+        return $this->tables[$name];
     }
 
     public function __call($method, $args)
     {
-        return call_user_func_array([$this->table, $method], $args);
+        $data = call_user_func_array([$this->tables[$this->name], $method], $args);
+        $this->name = '';
+        return $data;
     }
 }

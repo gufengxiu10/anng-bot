@@ -18,6 +18,19 @@ class Messages
         $this->keys = array_merge($this->keys, $this->aliases[$key]);
     }
 
+    /**
+     * @name: 
+     * @param {*} $key
+     * @author: ANNG
+     * @todo: 
+     * @Date: 2021-03-17 14:32:47
+     * @return {*}
+     */
+    public function exists($key): bool
+    {
+        return in_array($key, $this->keys);
+    }
+
     public function search($key)
     {
         $key = trim($key);
