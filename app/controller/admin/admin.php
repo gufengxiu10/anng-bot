@@ -6,6 +6,11 @@ use Anng\lib\annotations\module\Messages;
 
 class Admin
 {
+    public function __construct()
+    {
+        dump(1000);
+    }
+
     #[Messages(['key' => '你好', 'alias' => ['wq', 'find']])]
     public function list()
     {

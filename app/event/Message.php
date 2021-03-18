@@ -3,13 +3,13 @@
 namespace app\event;
 
 use Anng\lib\facade\Messages;
+use \Swoole\WebSocket\Server;
 
 class Message
 {
-    public function run($server, $frame)
+    public function run(Server $server, $frame)
     {
-        if (Messages::exists($frame->data)) {
-            Messages::search($frame->data);
-        }
+        // Messages::search();
+        dump($frame);
     }
 }

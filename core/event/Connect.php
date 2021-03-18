@@ -12,5 +12,7 @@ class Connect
             'fd' => $fd,
             'workerId' => $server->getWorkerId()
         ]);
+
+        dump('连接成功');
     }
 }
