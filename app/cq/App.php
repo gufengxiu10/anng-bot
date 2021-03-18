@@ -6,6 +6,7 @@ namespace app\cq;
 
 use Anng\lib\facade\Reflection;
 use app\cq\module\Message;
+use Reflector;
 
 class App
 {
@@ -16,6 +17,8 @@ class App
     private array $moduel = [
         Message::class
     ];
+
+    private $instanters = [];
 
     public function run($server, $frame)
     {
@@ -74,6 +77,7 @@ class App
     public function mount()
     {
         foreach ($this->moduel as $value) {
+            $this->instances[$value] = Reflection::instance($value);
         }
     }
 }
