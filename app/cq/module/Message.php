@@ -36,7 +36,7 @@ class Message
      * @Date: 2021-03-17 10:07:58
      * @return {*}
      */
-    public function sendGroup(string $groudId, string|Cq $message): string
+    public function sendGroup(string $groudId, array|Cq $message): string
     {
         return $this->set('send_group_msg', [
             'group_id' => $groudId,

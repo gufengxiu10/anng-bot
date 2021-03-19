@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace app\crontab;
 
+use Anng\lib\crontab\Base;
 use Anng\lib\facade\Redis;
 use Anng\lib\facade\Table;
+use app\cq\Cq;
+use app\cq\module\Message;
 use Swlib\SaberGM;
 
-class ToDayPrice
+class ToDayPrice extends Base
 {
     public function run()
     {
-        return;
         $group = [415446505];
-        // $group = [415446505, 93958924];
+        $group = [415446505, 93958924];
         if (!Redis::exists('lolicon')) {
             $res = SaberGM::get('https://api.lolicon.app/setu/' . '?' . http_build_query([
                 'apikey' => '32906725601ba5cf18c942',
@@ -61,9 +63,17 @@ class ToDayPrice
                 fwrite($wd, $content);
             }
             fclose($wd);
+            foreach (Table::getinstance('fd') as $val) {
+                if ($val['isBot'] == 1) {
+                    foreach ($group as $id) {
+                        $this->server->push($val['fd'], (new Message)->sendGroup((string)$id, (new Cq)->image('file://' . $fileName)));
+                    }
+                }
+            }
         } catch (\Throwable $th) {
             dump($th->getMessage());
-            array_push($data, $url);
+            $this->run();
+            return;
         }
 
         if (empty($data)) {

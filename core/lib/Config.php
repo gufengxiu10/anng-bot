@@ -26,12 +26,24 @@ class Config
         return $this->config;
     }
 
+    /**
+     * @name: 获得参数
+     * @param {*} $name
+     * @author: ANNG
+     * @todo: 
+     * @Date: 2021-03-19 09:40:25
+     * @return {*}
+     */
     public function get($name = '')
     {
         if (empty($name)) {
             return $this->config;
         }
 
+        if (str_contains($name, '.')) {
+            $name = explode('.', $name);
+            return $this->config[$name[0]][$name[1]];
+        }
         return $this->config[$name];
     }
 

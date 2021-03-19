@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Anng\lib;
 
-use Anng\traits\ws;
+use Anng\lib\facade\Reflection;
 use \Exception;
+use Swoole\Http\Server;
 
 class Crontab
 {
-    use ws;
-
     private array $task = [];
-    private int $second;
-    protected App $app;
+    private Server $server;
 
     public function setTask($task)
     {
@@ -21,8 +19,9 @@ class Crontab
         return $this;
     }
 
-    public function run(): void
+    public function run(Server $server): void
     {
+        $this->server = $server;
         \Swoole\Timer::tick(1000, function () {
             $this->getTime();
             foreach ($this->task as $val) {
@@ -80,8 +79,14 @@ class Crontab
      */
     public function taskClass($word)
     {
-        (new Reflection())->setDefaultMethod('run', ['ws' => $this->ws])
-            ->setMethod($word['method'] ?? '', ['ws' => $this->ws])
+        $method = '';
+        if (array_key_exists('method', $word)) {
+            $method = $word['method'];
+        }
+
+        Reflection::setDefaultMethod('run', ['server' => $this->server, 'config' => $word])
+            ->setMethod('_make', ['server' => $this->server, 'config' => $word])
+            ->setMethod($method ?: '', ['server' => $this->server, 'config' => $word])
             ->instance($word['task']);
     }
 

@@ -8,7 +8,7 @@ class Connect
 {
     public function run(\Swoole\Server $server, $fd, $reactorId)
     {
-        Table::name('fd')->set($server->getWorkerId() . $fd . $reactorId, [
+        Table::name('fd')->set($server->getWorkerId() . $fd, [
             'fd' => $fd,
             'workerId' => $server->getWorkerId()
         ]);

@@ -36,19 +36,18 @@ class Reflection
 
         $object = $reflection->newInstanceArgs($args);
 
-        $isMethod = false;
+
         if ($callMethod === true) {
             foreach ($this->method as $value) {
                 if ($reflection->hasMethod($value['method'])) {
                     $args = $value['args'] ?? [];
                     $methodArgs = $this->parseData($reflection->getMethod($value['method']), (array)$args);
                     call_user_func_array([$object, $value['method']], $methodArgs);
-                    $isMethod = true;
                 }
             }
         }
 
-        if ($isMethod === false && $this->defaultMethod) {
+        if ($this->defaultMethod) {
             if ($reflection->hasMethod($this->defaultMethod['method'])) {
                 $args = $this->defaultMethod['args'] ?? [];
                 $methodArgs = $this->parseData($reflection->getMethod($this->defaultMethod['method']), (array)$args);
@@ -116,10 +115,9 @@ class Reflection
      */
     public function setMethod(string|array $method, array $args = []): static
     {
-        if (!empty($this->method)) {
-            $this->method = [];
-        }
-
+        // if (!empty($this->method)) {
+        //     $this->method = [];
+        // }
         if (empty($method)) {
             return $this;
         }

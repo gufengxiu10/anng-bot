@@ -13,6 +13,7 @@ use ReflectionException;
 use Swoole\Coroutine\Http\Server;
 use Swoole\Coroutine\Server\Connection;
 use Swoole\Coroutine\Socket;
+use Swoole\Http\Server as HttpServer;
 use Swoole\Process\Pool;
 use Swoole\Table;
 use Swoole\Timer;
@@ -58,6 +59,7 @@ class App
         FacadeTable::create('fd', [
             ['fd', Table::TYPE_INT, 64],
             ['workerId', Table::TYPE_INT, 64],
+            ['isBot', Table::TYPE_INT, 2]
         ]);
     }
 
@@ -78,22 +80,36 @@ class App
             'hook_flags' => SWOOLE_HOOK_CURL
         ]);
 
-        $this->server = new WebSocketServer('0.0.0.0', 9502);
+        switch (Config::get('app.server')) {
+            case 'http':
+                $this->server = new HttpServer(Config::get('app.ip'), Config::get('app.prot'));
+                break;
+            case 'websocket':
+                $this->server = new WebSocketServer(Config::get('app.ip'), Config::get('app.prot'));
+                break;
+        }
+
         $this->server->set([
-            'worker_num' => 3
+            'worker_num' => Config::get('app.work_num')
         ]);
 
         //进程启动
         $this->server->on('WorkerStart', [$this->ico('WorkerStart'), 'run']);
         //有新连接进入
         $this->server->on('Connect', [$this->ico('Connect'), 'run']);
+
+        $this->server->on('request', [$this->ico('request'), 'run']);
+
         //握手成功后调用
         $this->server->on('open', [$this->ico('Open'), 'run']);
-        //接收客户端数据时触发
-        $this->server->on('message', [$this->ico('Message'), 'run']);
+
+        if (Config::get('app.server') == 'websocket') {
+            //接收客户端数据时触发
+            $this->server->on('message', [$this->ico('Message'), 'run']);
+        }
+
         //断开连接
         $this->server->on('close', [$this->ico('Close'), 'run']);
-
         $this->server->start();
     }
 
@@ -126,7 +142,7 @@ class App
 
     public function ico($method, $argc = [])
     {
-        $className = "\\Anng\\event\\" . $method;
+        $className = "\\Anng\\event\\" . ucfirst($method);
         return Reflection::instance($className, $argc);
     }
 

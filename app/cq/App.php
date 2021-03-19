@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace app\cq;
 
 use Anng\lib\facade\Reflection;
+use Anng\lib\facade\Table;
 use app\cq\module\Message;
 use Reflector;
+use Swoole\Http\Server;
 
 class App
 {
-    private $server;
+    private Server $server;
     private $frame;
     private $data;
 
@@ -36,7 +38,7 @@ class App
 
     public function event()
     {
-        if (array_key_exists('post_type', $this->data) && $this->data['post_type'] == 'meta_event') {
+        if (is_array($this->data) && array_key_exists('post_type', $this->data) && $this->data['post_type'] == 'meta_event') {
             switch ($this->data['meta_event_type']) {
                 case 'lifecycle':
                     break;
@@ -65,6 +67,10 @@ class App
         //表示无法查询到在线状态
         if ($this->data['status']['online'] == null) {
         }
+
+        Table::name('fd')->set($this->server->getWorkerId() . $this->frame->fd, [
+            'isBot' => 1
+        ]);
         // if($this->data['app_good'])
     }
 
