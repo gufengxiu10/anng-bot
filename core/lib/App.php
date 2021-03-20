@@ -181,4 +181,16 @@ class App
 
         return $this->rootPath;
     }
+
+
+    /**
+     * @name: 路由目录
+     * @author: ANNG
+     * @Date: 2021-01-11 09:38:21
+     * @return string
+     */
+    public function getRoutePath(): string
+    {
+        return $this->rootPath . 'route' . DIRECTORY_SEPARATOR;
+    }
 }

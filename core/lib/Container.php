@@ -177,6 +177,14 @@ class Container implements ContainerInterface
         return $data;
     }
 
+    public function clear($name)
+    {
+        $name = $this->getAlias($name);
+        if (array_key_exists($name, $this->instances)) {
+            unset($this->instances[$name]);
+        }
+    }
+
     public function setInstance($instance): static
     {
         static::$instance = $instance;
@@ -194,7 +202,6 @@ class Container implements ContainerInterface
 
     public function get($name)
     {
-
         return $this->make($name);
     }
 

@@ -9,11 +9,10 @@ use Anng\lib\Connect;
 use Anng\lib\Facade;
 use Anng\lib\Redis;
 use Anng\lib\Db;
-use Anng\lib\Info;
 use Anng\lib\Table;
 use Anng\lib\Annotations;
 use Anng\lib\Messages;
-use Symfony\Component\Finder\Finder;
+use Anng\lib\Route;
 
 require_once "vendor/autoload.php";
 
@@ -28,12 +27,11 @@ $container->bind([
     'Env'           => Env::class,
     'Db'            => Db::class,
     'Crontab'       => Crontab::class,
-    'Finder'        => Finder::class,
     'Connect'       => Connect::class,
     'Table'         => Table::class,
-    'Info'          => Info::class,
     'Annotations'   => Annotations::class,
-    'Messages'      => Messages::class
+    'Messages'      => Messages::class,
+    'Route'         => Route::class
 ]);
 
 require_once 'Helper.php';
