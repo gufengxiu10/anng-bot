@@ -11,29 +11,57 @@ use Symfony\Component\Finder\Finder;
 
 class Route
 {
+    private $request;
+    public array $routes = [];
 
-
-    /**
-     * @name: 初始化
-     * @param {*}
-     * @author: ANNG
-     * @todo: 
-     * @Date: 2021-03-20 14:23:21
-     * @return {*}
-     */
-    public function run($request)
+    public function send(Request $request)
     {
         $this->request = $request;
         $this->load();
-        (new Dispatch)->send($request);
+        $this->dispatch();
     }
 
+    public function dispatch()
+    {
+        (new Dispatch())->send($this->request, $this)
+            ->run();
+    }
+
+    /**
+     * @name: 路由文件加载
+     * @param {*}
+     * @author: ANNG
+     * @todo: 
+     * @Date: 2021-03-22 09:39:16
+     * @return {*}
+     */
     public function load()
     {
-        $finder = new Finder();
-        $finder->in(App::getRoutePath())->name('*.php');
-        foreach ($finder->files as $file) {
-            include_once $file;
+        $path = App::getRoutePath();
+        if (is_dir($path)) {
+            $finder = new Finder();
+            $finder->in(App::getRoutePath())->name('*.php');
+            foreach ($finder->files() as $file) {
+                include_once $file;
+            }
         }
+    }
+
+    public function get($rule, $route)
+    {
+        $this->addGroup($rule, $route, 'get');
+        return $this;
+    }
+
+    public function post($rule, $route)
+    {
+        $this->addGroup($rule, $route, 'post');
+        return $this;
+    }
+
+    public function addGroup($rule, $route, $method = '*')
+    {
+        $this->routes[$method][$rule] = $route;
+        return $this;
     }
 }
