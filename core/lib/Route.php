@@ -7,6 +7,7 @@ namespace Anng\lib;
 use Anng\lib\facade\App;
 use Anng\lib\facade\Container;
 use Anng\lib\route\Dispatch;
+use Exception;
 use Symfony\Component\Finder\Finder;
 
 class Route
@@ -18,7 +19,11 @@ class Route
     {
         $this->request = $request;
         $this->load();
-        $this->dispatch();
+        try {
+            return $this->dispatch();
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
     }
 
     public function dispatch()
@@ -47,21 +52,21 @@ class Route
         }
     }
 
-    public function get($rule, $route)
+    public function get($rule, $route = '')
     {
         $this->addGroup($rule, $route, 'get');
         return $this;
     }
 
-    public function post($rule, $route)
+    public function post($rule, $route = '')
     {
         $this->addGroup($rule, $route, 'post');
         return $this;
     }
 
-    public function addGroup($rule, $route, $method = '*')
+    public function addGroup($rule, $route = '', $method = '*')
     {
-        $this->routes[$method][$rule] = $route;
+        $this->routes[] = [$method, $rule, $route];
         return $this;
     }
 }

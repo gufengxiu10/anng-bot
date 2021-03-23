@@ -24,4 +24,9 @@ class Request
     {
         return strtolower($this->request->server['request_method']);
     }
+
+    public function isMethod($method)
+    {
+        return $this->method() == $method ?  true : false;
+    }
 }

@@ -2,22 +2,16 @@
 
 namespace app\controller\admin;
 
-use Anng\lib\annotations\module\Messages;
+use Anng\lib\facade\App;
+use Anng\lib\facade\Table;
 
 class Admin
 {
-    public function __construct()
-    {
-        dump(1000);
-    }
-
-    #[Messages(['key' => '你好', 'alias' => ['wq', 'find']])]
     public function list()
     {
-        dump('list1');
+        dump(Table::name('fd')->count());
     }
 
-    #[Messages(['key' => '来一图', 'alias' => ['ki']])]
     public function list2()
     {
         dump('list2');

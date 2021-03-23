@@ -14,9 +14,7 @@ class Request
     public function run(HttpRequest $request, Response $response)
     {
         $request = new LibRequest($request);
-        FacadeRoute::send($request);
+        $data = FacadeRoute::send($request);
+        $response->end($data);
     }
-
-
-    
 }

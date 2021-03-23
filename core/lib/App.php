@@ -193,4 +193,9 @@ class App
     {
         return $this->rootPath . 'route' . DIRECTORY_SEPARATOR;
     }
+
+    public function getAppPath()
+    {
+        return $this->rootPath . 'app' . DIRECTORY_SEPARATOR;
+    }
 }
