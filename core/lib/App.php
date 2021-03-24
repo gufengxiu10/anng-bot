@@ -2,42 +2,25 @@
 
 namespace Anng\lib;
 
-use Anng\lib\facade\Annotations;
+use Anng\lib\app\Server;
 use Anng\lib\facade\Config;
-use Anng\lib\facade\Crontab;
-use Anng\lib\facade\Db;
 use Anng\lib\facade\Env;
-use Anng\lib\facade\Reflection;
 use Anng\lib\facade\Table as FacadeTable;
 use ReflectionException;
-use Swoole\Coroutine\Http\Server;
-use Swoole\Coroutine\Server\Connection;
-use Swoole\Coroutine\Socket;
-use Swoole\Http\Server as HttpServer;
-use Swoole\Process\Pool;
+
 use Swoole\Table;
-use Swoole\Timer;
-use Swoole\WebSocket\Server as WebSocketServer;
+
 
 class App
 {
-    private $service;
-
-    //容器对象
-    private $container;
-
     //根目录
     protected $rootPath;
-
-
-    protected $fd;
 
     public function __construct()
     {
         date_default_timezone_set("Asia/Shanghai");
         $this->rootPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR;
     }
-
 
     public function init()
     {
@@ -67,88 +50,10 @@ class App
     {
         $this->init();
         try {
-            $this->server();
-            // ReflectionException
+            (new Server)->run();
         } catch (ReflectionException $th) {
             dump('反射失败：' . $th->getMessage());
         }
-    }
-
-    private function server()
-    {
-        \Swoole\Coroutine::set([
-            'hook_flags' => SWOOLE_HOOK_CURL
-        ]);
-
-        switch (Config::get('app.server')) {
-            case 'http':
-                $this->server = new HttpServer(Config::get('app.ip'), Config::get('app.prot'));
-                break;
-            case 'websocket':
-                $this->server = new WebSocketServer(Config::get('app.ip'), Config::get('app.prot'));
-                break;
-        }
-
-        $this->server->set([
-            'worker_num' => Config::get('app.work_num')
-        ]);
-
-        //进程启动
-        $this->server->on('WorkerStart', [$this->ico('WorkerStart'), 'run']);
-        //有新连接进入
-        $this->server->on('Connect', [$this->ico('Connect'), 'run']);
-
-        $this->server->on('request', [$this->ico('request'), 'run']);
-
-        //握手成功后调用
-        $this->server->on('open', [$this->ico('Open'), 'run']);
-
-        if (Config::get('app.server') == 'websocket') {
-            //接收客户端数据时触发
-            $this->server->on('message', [$this->ico('Message'), 'run']);
-        }
-
-        //断开连接
-        $this->server->on('close', [$this->ico('Close'), 'run']);
-        $this->server->start();
-    }
-
-    /**
-     * @name: 启动任务调度器
-     * @author: ANNG
-     * @Date: 2021-01-27 15:39:46
-     * @return {*}
-     */
-    public function crontabStart(): void
-    {
-        Crontab::setTask(Config::get('crontab'))
-            ->run();
-    }
-
-    /**
-     * @name: 创建Mysql连接池
-     * @param {*}
-     * @author: ANNG
-     * @todo: 
-     * @Date: 2021-01-27 15:41:03
-     * @return {*}
-     */
-    public function createMysqlPool()
-    {
-        Db::setConfig(Config::get('datebase'))
-            ->create();
-    }
-
-
-    public function ico($method, $argc = [])
-    {
-        $className = "\\Anng\\event\\" . ucfirst($method);
-        return Reflection::instance($className, $argc);
-    }
-
-    public function loadAnnotation()
-    {
-        Annotations::load()->run();
     }
 
     /**
@@ -182,7 +87,6 @@ class App
         return $this->rootPath;
     }
 
-
     /**
      * @name: 路由目录
      * @author: ANNG
@@ -194,6 +98,14 @@ class App
         return $this->rootPath . 'route' . DIRECTORY_SEPARATOR;
     }
 
+    /**
+     * @name: 应用目录
+     * @param {*}
+     * @author: ANNG
+     * @todo: 
+     * @Date: 2021-03-24 14:03:53
+     * @return {*}
+     */
     public function getAppPath()
     {
         return $this->rootPath . 'app' . DIRECTORY_SEPARATOR;

@@ -103,13 +103,6 @@ class Objects
         }
     }
 
-
-    // public function (Type $var = null)
-    // {
-    //     # code...
-    // }
-
-
     public function error()
     {
         # code...

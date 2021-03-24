@@ -3,9 +3,9 @@
 namespace Anng\event;
 
 use Anng\lib\facade\Container;
+use Anng\lib\facade\Request as FacadeRequest;
+use Anng\lib\facade\Response as FacadeResponse;
 use Anng\lib\facade\Route as FacadeRoute;
-use Anng\lib\Request as LibRequest;
-use Anng\lib\Route;
 use Swoole\Http\Request as HttpRequest;
 use Swoole\Http\Response;
 
@@ -13,8 +13,9 @@ class Request
 {
     public function run(HttpRequest $request, Response $response)
     {
-        $request = new LibRequest($request);
-        $data = FacadeRoute::send($request);
-        $response->end($data);
+        FacadeRequest::send($request);
+        FacadeResponse::send($response);
+        $data = FacadeRoute::send(Container::get('request'));
+        FacadeResponse::end($data);
     }
 }

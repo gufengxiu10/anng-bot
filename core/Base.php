@@ -13,8 +13,9 @@ use Anng\lib\Table;
 use Anng\lib\Annotations;
 use Anng\lib\Messages;
 use Anng\lib\Route;
+use Anng\lib\Request;
 
-require_once "vendor/autoload.php";
+require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 define('ROOT_PATH', dirname(__DIR__));
 
@@ -30,6 +31,9 @@ $container->bind([
     'Connect'       => Connect::class,
     'Table'         => Table::class,
     'Annotations'   => Annotations::class,
+    'Messages'      => Messages::class,
+    'Request'       => Request::class,
+    'Response'      => Response::class,
     'Messages'      => Messages::class,
     'Route'         => Route::class
 ]);

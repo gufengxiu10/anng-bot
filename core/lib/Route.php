@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Anng\lib;
 
 use Anng\lib\facade\App;
-use Anng\lib\facade\Container;
 use Anng\lib\route\Dispatch;
-use Exception;
 use Symfony\Component\Finder\Finder;
 
 class Route
@@ -28,7 +26,7 @@ class Route
 
     public function dispatch()
     {
-        (new Dispatch())->send($this->request, $this)
+        return (new Dispatch())->send($this->request, $this)
             ->run();
     }
 
