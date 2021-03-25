@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Anng\lib\db;
 
+use Anng\lib\Db;
 use Anng\lib\db\biluder\Mysql;
 use Swoole\Database\PDOProxy;
 
@@ -31,9 +32,10 @@ class Sql
 
     private bool $isSql = false;
 
-    public function __construct(PDOProxy $connection, Config $config)
+    public function __construct(Db $db, Config $config)
     {
-        $this->connection = $connection;
+        $this->db = $db;
+        $this->connection = $db->getPool()->get();
         $this->config = $config;
         $this->biluder = new Mysql($this);
     }
@@ -244,5 +246,10 @@ class Sql
         $this->field = '*';
         $this->alias = null;
         $this->data = [];
+    }
+
+    public function __destruct()
+    {
+        $this->db->getPool()->put($this->connection);
     }
 }

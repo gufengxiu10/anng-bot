@@ -70,9 +70,8 @@ class Db
         unset($sql);
     }
 
-    public function __construct($method, $args = [])
+    public function __call($method, $args = [])
     {
-        $connection = $this->getPool()->get();
-        return call_user_func_array([(new Sql($connection, $this->config)), $method], $args);
+        return call_user_func_array([(new Sql($this, $this->config)), $method], $args);
     }
 }
