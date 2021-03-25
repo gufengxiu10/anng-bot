@@ -14,8 +14,7 @@ class Request
     public function run(HttpRequest $request, Response $response)
     {
         FacadeRequest::send($request);
-        FacadeResponse::send($response);
-        $data = FacadeRoute::send(Container::get('request'));
-        FacadeResponse::end($data);
+        FacadeResponse::send($response)->end(FacadeRoute::send(Container::get('request')))->clear();
+        FacadeRequest::clear();
     }
 }

@@ -37,7 +37,13 @@ class Dispatch
             throw new ResponseException('方法不存在');
         }
 
-        return $object->$action();
+        $data = $object->$action();
+
+        if (is_array($data)) {
+            $data = json_encode($data, JSON_UNESCAPED_UNICODE);
+        }
+
+        return $data;
     }
 
     public function getRoute()

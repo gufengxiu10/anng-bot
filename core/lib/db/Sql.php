@@ -25,6 +25,8 @@ class Sql
     //条件
     public array $where = [];
 
+    public string|array|null|int $limit = null;
+
     public array $data = [];
 
     private bool $isSql = false;
@@ -97,6 +99,12 @@ class Sql
     {
         $where = [$field, $condition, $value];
         array_push($this->where, $where);
+        return $this;
+    }
+
+    public function limit($limit)
+    {
+        $this->limit = $limit;
         return $this;
     }
 
@@ -201,6 +209,23 @@ class Sql
         }
 
         $data = $statement->fetch();
+        $this->clear();
+        return $data;
+    }
+
+    public function select()
+    {
+        $sql = $this->biluder->select();
+        $statement = $this->connection->prepare($sql);
+        if (!$statement) {
+            throw new \Exception('Prepare failed');
+        }
+        $result = $statement->execute();
+        if (!$result) {
+            throw new \Exception('Execute failed');
+        }
+
+        $data = $statement->fetchAll();
         $this->clear();
         return $data;
     }

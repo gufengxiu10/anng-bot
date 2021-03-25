@@ -8,7 +8,7 @@ use Swoole\Http\Request as HttpRequest;
 
 class Request
 {
-    private $request;
+    private $request = null;
 
     public function send(HttpRequest $request)
     {
@@ -54,5 +54,10 @@ class Request
         }
 
         return $this->request->header[$name];
+    }
+
+    public function clear()
+    {
+        $this->request = null;
     }
 }

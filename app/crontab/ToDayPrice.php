@@ -71,7 +71,6 @@ class ToDayPrice extends Base
                 }
             }
         } catch (\Throwable $th) {
-            dump($th->getMessage());
             $this->run();
             return;
         }

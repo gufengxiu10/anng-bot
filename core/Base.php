@@ -17,9 +17,8 @@ use Anng\lib\Request;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
-define('ROOT_PATH', dirname(__DIR__));
-
 $container = new Container;
+
 $container->bind([
     'App'           => App::class,
     'Facade'        => Facade::class,

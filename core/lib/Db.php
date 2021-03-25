@@ -69,4 +69,10 @@ class Db
         //消毁
         unset($sql);
     }
+
+    public function __construct($method, $args = [])
+    {
+        $connection = $this->getPool()->get();
+        return call_user_func_array([(new Sql($connection, $this->config)), $method], $args);
+    }
 }

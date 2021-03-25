@@ -28,7 +28,5 @@ class WorkerStart
                 // dump(Table::name('fd')->count());
             });
         }
-
-        
     }
 }
