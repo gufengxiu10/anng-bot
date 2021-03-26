@@ -17,10 +17,6 @@ class Server
 {
     public function run()
     {
-        \Swoole\Coroutine::set([
-            'hook_flags' => SWOOLE_HOOK_CURL
-        ]);
-
         switch (Config::get('app.server')) {
             case 'http':
                 $this->server = new HttpServer(Config::get('app.ip'), Config::get('app.prot'));
@@ -31,7 +27,8 @@ class Server
         }
 
         $this->server->set([
-            'worker_num' => Config::get('app.work_num')
+            'worker_num' => Config::get('app.work_num'),
+            // 'hook_flags' => SWOOLE_HOOK_ALL
         ]);
 
         //进程启动

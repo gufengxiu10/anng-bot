@@ -2,6 +2,7 @@
 
 namespace Anng\Plug\Oos;
 
+use Anng\Plug\Oos\Aliyun\Client;
 use OSS\OssClient;
 
 class Auth
@@ -13,10 +14,16 @@ class Auth
 
     public function __construct(string $id, string $secret)
     {
+
         $this->id = $id;
         $this->secret = $secret;
-        $this->client = new OssClient($this->id, $this->secret, 'http://oss-cn-shenzhen.aliyuncs.com');
+    }
+
+    public function aliyun()
+    {
+        $this->client = new Client($this->id, $this->secret, 'http://oss-cn-shenzhen.aliyuncs.com');
         $this->client->setConnectTimeout(20);
+        return $this;
     }
 
     /**
@@ -41,6 +48,7 @@ class Auth
     public function setBucket($val)
     {
         $this->bucket = $val;
+        return $this;
     }
 
 

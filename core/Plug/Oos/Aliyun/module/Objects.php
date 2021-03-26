@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Anng\Plug\Oos\Aliyun;
+namespace Anng\Plug\Oos\Aliyun\module;
 
 use Anng\Plug\Oos\Auth;
 use OSS\Core\OssException;
