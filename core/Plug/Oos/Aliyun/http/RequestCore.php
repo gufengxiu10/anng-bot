@@ -6,7 +6,7 @@ namespace Anng\Plug\Oos\Aliyun\http;
 
 use OSS\Http\RequestCore as HttpRequestCore;
 use Swlib\Saber;
-use Swoole\Coroutine\Http\Client;
+use Swlib\Saber\Response;
 
 class RequestCore extends HttpRequestCore
 {
@@ -16,7 +16,7 @@ class RequestCore extends HttpRequestCore
      * @param boolean $parse (Optional) Whether to parse the response with ResponseCore or not.
      * @return string The resulting unparsed data from the request.
      */
-    public function send_request($parse = false, $options = [])
+    public function send_request($parse = false, $options = []): void
     {
         set_time_limit(0);
 
@@ -25,11 +25,8 @@ class RequestCore extends HttpRequestCore
             'timeout' => $this->timeout,
             'referer' => $this->request_url,
             'useragent' => $this->useragent,
-            'headers' => array_merge($this->request_headers, ['content-length' => $this->read_stream_size]),
+            'headers' => array_merge($this->request_headers, ['content-length' => (string)$this->read_stream_size]),
         ];
-
-        dump($this->request_headers);
-        dump($config);
 
         $saber = Saber::create($config);
         switch ($this->method) {
@@ -44,35 +41,20 @@ class RequestCore extends HttpRequestCore
                 break;
         }
 
-        // dump($res);
-        // $saber = Saber::create();
-
-        // $curl_handle = $this->prep_request();
-        // $this->response = curl_exec($curl_handle);
-
-        // if ($this->response === false) {
-        //     throw new RequestCore_Exception('cURL resource: ' . (string)$curl_handle . '; cURL error: ' . curl_error($curl_handle) . ' (' . curl_errno($curl_handle) . ')');
-        // }
-
-        // $parsed_response = $this->process_response($curl_handle, $this->response);
-
-        // curl_close($curl_handle);
-
-        // if ($parse) {
-        //     return $parsed_response;
-        // }
-
-        // return $this->response;
+        $this->response = $res;
     }
 
-    /**
-     * Prepare and adds the details of the cURL request. This can be passed along to a <php:curl_multi_exec()>
-     * function.
-     *
-     * @return resource The handle for the cURL object.
-     *
-     */
-    public function prep_request()
+    public function get_response_header($header = null)
     {
+        if (!is_null($header)) {
+            return $this->response->getHeader($header);
+        }
+
+        // return $this->response->getHeaders();
+    }
+
+    public function __call($method, $args = [])
+    {
+        return call_user_func_array([$this->response, $method], $args);
     }
 }

@@ -27,7 +27,10 @@ class Objects
     {
 
         if (is_file($val)) {
-            array_push($this->files, $val);
+            array_push($this->files, [
+                'name'  => substr($val, strrpos($val, '/') + 1),
+                'path'  => $val
+            ]);
         } elseif (is_dir($val)) {
             $finder = (new Finder)->in($val);
             foreach ($finder as $file) {
@@ -55,12 +58,7 @@ class Objects
     {
         foreach ($this->files as $file) {
             try {
-                if (is_array($file)) {
-                    $res = $this->auth->client()->putObject($this->auth->getBucket(), $file['name'], file_get_contents($file['path']));
-                } else {
-                    $res = $this->auth->client()->uploadFile($this->auth->getBucket(), '1.png', $file);
-                }
-
+                $res = $this->auth->client()->putObject($this->auth->getBucket(), $file['name'], file_get_contents($file['path']));
                 array_push($this->resData, $res);
             } catch (OssException $e) {
                 dump($e->getMessage());
@@ -68,7 +66,7 @@ class Objects
             }
         }
 
-        $this->retransmission();
+        return $this->retransmission();
     }
 
 
@@ -101,6 +99,12 @@ class Objects
             //重置
             $this->errorFile = [];
         }
+
+        if (empty($this->errorFile)) {
+            return true;
+        }
+
+        return $this->errorFile;
     }
 
     public function error()

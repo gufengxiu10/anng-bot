@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Anng\Plug\Oos\Aliyun;
 
 use Anng\Plug\Oos\Aliyun\http\RequestCore as HttpRequestCore;
+use Anng\Plug\Oos\Aliyun\http\ResponseCore;
 use OSS\Core\MimeTypes;
 use OSS\Core\OssException;
 use OSS\Core\OssUtil;
 use OSS\Http\RequestCore;
 use OSS\Http\RequestCore_Exception;
-use OSS\Http\ResponseCore;
 use OSS\OssClient;
 use OSS\Result\CallbackResult;
 use OSS\Result\PutSetDeleteResult;
+use Swlib\Http\Response;
 
 class Client extends OssClient
 {
@@ -112,7 +113,6 @@ class Client extends OssClient
         }
 
         $response = $this->auth($options);
-
         if (isset($options[self::OSS_CALLBACK]) && !empty($options[self::OSS_CALLBACK])) {
             $result = new CallbackResult($response);
         } else {
@@ -226,8 +226,8 @@ class Client extends OssClient
         }
 
         uksort($headers, 'strnatcasecmp');
-
         foreach ($headers as $header_key => $header_value) {
+            $header_value = is_int($header_value) ? (string)$header_value : $header_value;
             $header_value = str_replace(array("\r", "\n"), '', $header_value);
             if ($header_value !== '' || $header_key === self::OSS_ACCEPT_ENCODING) {
                 $request->add_header($header_key, $header_value);
@@ -273,7 +273,6 @@ class Client extends OssClient
 
         try {
             $request->send_request(false, $options);
-            return;
         } catch (RequestCore_Exception $e) {
             throw (new OssException('RequestCoreException: ' . $e->getMessage()));
         }
@@ -283,7 +282,7 @@ class Client extends OssClient
         $response_header['oss-stringtosign'] = $string_to_sign;
         $response_header['oss-requestheaders'] = $request->request_headers;
 
-        $data = new ResponseCore($response_header, $request->get_response_body(), $request->get_response_code());
+        $data = new ResponseCore($response_header, (string)$request->getBody(), $request->getStatusCode());
         //retry if OSS Internal Error
         if ((int)$request->get_response_code() === 500) {
             if ($this->redirects <= $this->maxRetries) {
