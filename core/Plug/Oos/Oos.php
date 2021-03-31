@@ -24,6 +24,20 @@ class Oos
         }
     }
 
+    public function getClientType()
+    {
+        if ($this->object instanceof Objects) {
+            return 'aliyun';
+        } else {
+            return 'location';
+        }
+    }
+
+    public function getBucket()
+    {
+        return $this->auth->getBucket();
+    }
+
     public function __call($method, $args = [])
     {
         return call_user_func_array([$this->object, $method], $args);

@@ -282,7 +282,7 @@ class Client extends OssClient
         $response_header['oss-stringtosign'] = $string_to_sign;
         $response_header['oss-requestheaders'] = $request->request_headers;
 
-        $data = new ResponseCore($response_header, (string)$request->getBody(), $request->getStatusCode());
+        $data = new ResponseCore($response_header, $request->getParsedJsonArray(), $request->getStatusCode());
         //retry if OSS Internal Error
         if ((int)$request->get_response_code() === 500) {
             if ($this->redirects <= $this->maxRetries) {

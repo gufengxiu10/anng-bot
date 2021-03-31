@@ -11,15 +11,13 @@ abstract class Biluder
 
     use Insert;
 
-    protected $connection;
     protected array $option = [];
 
     protected $selectFindSql = "SELECT %FIELD% FROM %TABLE% %WHERE% %LIMIT%";
 
-    public function __construct($connection)
+    public function setParse($parse)
     {
-        $this->connection = $connection;
-        $this->parse = new Parse($this->connection);
+        $this->parse = $parse;
     }
 
     /**

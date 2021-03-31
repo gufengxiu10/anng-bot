@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\pixiv\module;
 
+use Anng\lib\facade\Cache;
 use app\pixiv\Base;
 
 class Pixiviz extends Base
@@ -54,12 +55,20 @@ class Pixiviz extends Base
      */
     public function rank($mode, $date,  $page = 1)
     {
-        return $this->send('get', '/v1/illust/rank', [
-            'mode' => $mode,
-            'date' => $date,
-            // 'offset' => $offset,
-            'page' => $page
-        ]);
+        $key = "Pixiviz_{$mode}_{$date}";
+        if (!Cache::has($key)) {
+            $data = $this->send('get', '/v1/illust/rank', [
+                'mode' => $mode,
+                'date' => $date,
+                // 'offset' => $offset,
+                'page' => $page
+            ]);
+
+            $data = $data->getParsedJsonArray();
+            Cache::set($key, $data, 3600);
+        }
+
+        return Cache::get($key);
     }
 
     /**

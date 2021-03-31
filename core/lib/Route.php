@@ -17,11 +17,7 @@ class Route
     {
         $this->request = $request;
         $this->load();
-        try {
-            return $this->dispatch();
-        } catch (\Throwable $th) {
-            return $th->getMessage();
-        }
+        return $this->dispatch();
     }
 
     public function dispatch()

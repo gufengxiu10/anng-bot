@@ -7,6 +7,7 @@ namespace Anng\lib;
 
 use Anng\lib\db\Config;
 use Anng\lib\db\connect\PdoPool;
+use Anng\lib\db\ki;
 use Anng\lib\db\Sql;
 
 class Db
@@ -57,21 +58,9 @@ class Db
         return $this;
     }
 
-    public function getConnection(): Sql
-    {
-        $connection = $this->getPool()->get();
-        return (new Sql($connection, $this->config));
-    }
-
-    public function pushConnection(Sql $sql): void
-    {
-        $this->getPool()->put($sql->getConnection());
-        //消毁
-        unset($sql);
-    }
-
     public function __call($method, $args = [])
     {
-        return call_user_func_array([(new Sql($this, $this->config)), $method], $args);
+        $data = call_user_func_array([new Sql($this, $this->config), $method], $args);
+        return $data;
     }
 }

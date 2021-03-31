@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Anng\lib\db\biluder\sql;
 
+use Predis\Command\KeySort;
+
 trait Insert
 {
     protected $installSql = "INSERT INTO %TABLE%(%FIELD%) VALUES %DATA% %COMMENT%";
@@ -11,7 +13,7 @@ trait Insert
 
     public function insert()
     {
-        $data = $this->parseData();
+        $data = $this->parse->data();
         if (empty($data)) {
             return false;
         }
@@ -20,7 +22,7 @@ trait Insert
         $values = array_values($data);
 
         $sql = str_replace(["%TABLE%", "%FIELD%", "%DATA%", "%COMMENT%"], [
-            $this->parseTable(),
+            $this->parse->table(),
             implode(',', $field),
             '(' . implode(',', $values) . ')',
             ''
@@ -31,52 +33,26 @@ trait Insert
 
     public function insertAll()
     {
-        $data = $this->parseData([], false);
+        $data = $this->parse->data([], false);
         if (empty($data)) {
             return false;
         }
 
-
         $value = [];
+
         foreach ($data as &$val) {
-            $val = $this->parseData($val);
+            $val = $this->parse->data($val);
+            ksort($val);
             array_push($value, "(" . implode(',', $val) . ')');
         }
 
         $field = array_keys(end($data));
         $sql = str_replace(["%TABLE%", "%FIELD%", "%DATA%", "%COMMENT%"], [
-            $this->parseTable(),
+            $this->parse->table(),
             implode(',', $field),
             implode(',', $value),
             ''
         ], $this->installSql);
-        return $sql;
-
-        // $field = [];
-
-        // $field = !isset($data['field']) ? $data[0] : $data['field'];
-        // $nd = !isset($data['data']) ? $data[1] : $data['data'];
-        // $values = '';
-        // foreach ($nd as $value) {
-        //     $values .= 'SELECT ';
-        //     foreach ($value as &$val) {
-        //         if (is_string($val)) {
-        //             $val = "'" . $val . "'";
-        //         }
-        //     }
-
-        //     $values .= implode(',', $value);
-        //     $values .= ' UNION ALL ';
-        // }
-
-        // $values = rtrim($values, 'UNION ALL');
-
-        // $sql = str_replace(["%TABLE%", "%FIELD%", "%DATA%", "%COMMENT%"], [
-        //     $this->parseTable(),
-        //     implode(',', $field),
-        //     $values,
-        //     ''
-        // ], $this->installAllSql);
         return $sql;
     }
 }

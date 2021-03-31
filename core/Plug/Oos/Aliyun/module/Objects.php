@@ -59,14 +59,13 @@ class Objects
         foreach ($this->files as $file) {
             try {
                 $res = $this->auth->client()->putObject($this->auth->getBucket(), $file['name'], file_get_contents($file['path']));
-                array_push($this->resData, $res);
+                return $res['oss-request-url'];
             } catch (OssException $e) {
                 dump($e->getMessage());
                 array_push($this->errorFile, $file);
+                return false;
             }
         }
-
-        return $this->retransmission();
     }
 
 
@@ -101,7 +100,7 @@ class Objects
         }
 
         if (empty($this->errorFile)) {
-            return true;
+            return count($this->resData) > 1 ? $this->resData : $this->resData[0];
         }
 
         return $this->errorFile;

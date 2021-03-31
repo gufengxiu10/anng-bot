@@ -6,11 +6,12 @@ namespace Anng\lib\db;
 
 class Parse
 {
-    private $connection;
 
-    public function __construct(Sql $sql)
+    public $connection = [];
+
+    public function setData($data)
     {
-        $this->connection = $sql;
+        $this->connection = $data;
     }
 
     /**
@@ -23,7 +24,7 @@ class Parse
      */
     public function field()
     {
-        return $this->connection->field;
+        return $this->connection['field'];
     }
 
 
@@ -37,9 +38,9 @@ class Parse
      */
     public function table()
     {
-        $table = $this->connection->table;
-        if ($this->connection->alias) {
-            $table .= ' AS ' . $this->connection->alias;
+        $table = $this->connection['table'];
+        if ($this->connection['alias']) {
+            $table .= ' AS ' . $this->connection['alias'];
         }
 
         return $table;
@@ -55,7 +56,7 @@ class Parse
      */
     public function where()
     {
-        $where = $this->connection->where;
+        $where = $this->connection['where'] ?: [];
         if (empty($where)) {
             return '';
         }
@@ -88,7 +89,7 @@ class Parse
      */
     public function data($data = [], $handle = true)
     {
-        $data = $data ?: $this->connection->data;
+        $data = $data ?: $this->connection['data'] ?: [];
 
         $re = [];
         if ($handle === true) {
@@ -113,7 +114,7 @@ class Parse
 
     public function limit()
     {
-        $limit = $this->connection->limit;
+        $limit = $this->connection['limit'] ?? '';
         if (empty($limit)) {
             return '';
         }

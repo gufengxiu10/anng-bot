@@ -10,9 +10,11 @@ use Swoole\Database\PDOProxy;
 
 class Sql
 {
-    protected PDOProxy $connection;
+    protected PDOProxy $baseConnection;
+    protected $connection;
     protected $pool;
     protected $biluder;
+    protected $parse;
 
     //表名
     public string|null $table = null;
@@ -35,9 +37,11 @@ class Sql
     public function __construct(Db $db, Config $config)
     {
         $this->db = $db;
-        $this->connection = $db->getPool()->get();
+        $this->baseConnection = $db->getPool()->get();
+        $this->biluder = new Mysql();
+        $this->parse = new Parse();
+        $this->connection = new Connection($this->baseConnection, $this->parse);
         $this->config = $config;
-        $this->biluder = new Mysql($this);
     }
 
     public function getConnection()
@@ -121,11 +125,12 @@ class Sql
     public  function insert(array $data)
     {
         $this->data = $data;
-        $sql = $this->biluder->insert();
+        $sql = $this->parse()->insert();
+
+        $pk = $this->connection->getPk();
         if ($this->isSql === true) {
             return $sql;
         }
-
         $statement = $this->connection->prepare($sql);
         if (!$statement) {
             throw new \Exception('Prepare failed');
@@ -134,7 +139,9 @@ class Sql
         if (!$result) {
             throw new \Exception('Execute failed');
         }
-        return $result;
+
+        $id = $this->connection->lastInsertId();
+        return array_merge($data, [$pk => $id]);
     }
 
     /**
@@ -148,7 +155,7 @@ class Sql
     public function insertId($data)
     {
         $this->data = $data;
-        $sql = $this->biluder->insert();
+        $sql = $this->parse()->insert();
         $statement = $this->connection->prepare($sql);
         if (!$statement) {
             throw new \Exception('Prepare failed');
@@ -159,7 +166,6 @@ class Sql
         }
 
         $id = $this->connection->lastInsertId();
-        $this->clear();
         return $id;
     }
 
@@ -174,7 +180,7 @@ class Sql
     public function insertAll(array $data)
     {
         $this->data = $data;
-        $sql = $this->biluder->insertAll();
+        $sql = $this->parse()->insertAll();
         if ($this->isSql === true) {
             return $sql;
         }
@@ -186,7 +192,6 @@ class Sql
         if (!$result) {
             throw new \Exception('Execute failed');
         }
-        $this->clear();
         return $result;
     }
 
@@ -200,7 +205,7 @@ class Sql
      */
     public function find()
     {
-        $sql = $this->biluder->find();
+        $sql = $this->parse()->find();
         $statement = $this->connection->prepare($sql);
         if (!$statement) {
             throw new \Exception('Prepare failed');
@@ -211,13 +216,12 @@ class Sql
         }
 
         $data = $statement->fetch();
-        $this->clear();
         return $data;
     }
 
     public function select()
     {
-        $sql = $this->biluder->select();
+        $sql = $this->parse()->select();
         $statement = $this->connection->prepare($sql);
         if (!$statement) {
             throw new \Exception('Prepare failed');
@@ -228,7 +232,6 @@ class Sql
         }
 
         $data = $statement->fetchAll();
-        $this->clear();
         return $data;
     }
 
@@ -248,8 +251,26 @@ class Sql
         $this->data = [];
     }
 
+    private  function parse()
+    {
+        $this->parse->setData([
+            'where' => $this->where,
+            'table' => $this->table,
+            'field' => $this->field,
+            'alias' => $this->alias,
+            'data'  => $this->data,
+        ]);
+
+        $this->biluder->setParse($this->parse);
+        return $this->biluder;
+    }
+
     public function __destruct()
     {
-        $this->db->getPool()->put($this->connection);
+        $this->clear();
+        $this->biluder = null;
+        $this->parse = null;
+        $this->connection = null;
+        $this->db->getPool()->put($this->baseConnection);
     }
 }

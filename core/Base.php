@@ -11,6 +11,7 @@ use Anng\lib\Redis;
 use Anng\lib\Db;
 use Anng\lib\Table;
 use Anng\lib\Annotations;
+use Anng\lib\cache\Cache;
 use Anng\lib\Messages;
 use Anng\lib\Route;
 use Anng\lib\Request;
@@ -34,7 +35,8 @@ $container->bind([
     'Request'       => Request::class,
     'Response'      => Response::class,
     'Messages'      => Messages::class,
-    'Route'         => Route::class
+    'Route'         => Route::class,
+    'Cache'         => Cache::class
 ]);
 
 require_once 'Helper.php';
