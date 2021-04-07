@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Anng\Plug\Oos\Aliyun\module;
+namespace Anng\plug\oss\aliyun\module;
 
-use Anng\Plug\Oos\Auth;
+use Anng\plug\oss\Auth;
 use OSS\Core\OssException;
 use Symfony\Component\Finder\Finder;
 

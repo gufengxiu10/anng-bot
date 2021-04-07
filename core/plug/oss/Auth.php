@@ -1,9 +1,9 @@
 <?php
 
-namespace Anng\Plug\Oos;
+namespace Anng\plug\oss;
 
-use Anng\Plug\Oos\Aliyun\Client;
-use OSS\OssClient;
+use Anng\plug\oss\aliyun\Client;
+use Exception;
 
 class Auth
 {
@@ -17,6 +17,15 @@ class Auth
 
         $this->id = $id;
         $this->secret = $secret;
+    }
+
+    public function setDrive($drive): self
+    {
+        if (!method_exists($this, $drive)) {
+            throw new Exception('驱动不存在');
+        }
+
+        return $this->$drive();
     }
 
     public function aliyun()
@@ -45,7 +54,7 @@ class Auth
      * @Date: 2021-01-22 10:27:24
      * @return {*}
      */
-    public function setBucket($val)
+    public function setBucket($val): self
     {
         $this->bucket = $val;
         return $this;

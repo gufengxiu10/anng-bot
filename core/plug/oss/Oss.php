@@ -2,18 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Anng\Plug\Oos;
+namespace Anng\plug\oss;
 
-use Anng\Plug\Oos\Aliyun\Client;
-use Anng\Plug\Oos\Aliyun\module\Objects;
+use Anng\lib\facade\Config;
+use Anng\plug\oss\aliyun\Client;
+use Anng\plug\oss\aliyun\module\Objects;
 
-class Oos
+class Oss
 {
     private $auth;
 
-    public function __construct($auth)
+    public function __construct()
     {
-        $this->auth = $auth;
+        $this->auth = new Auth(Config::get('oss.ak'), Config::get('oss.sk'));
+        $this->auth->setDrive(Config::get('oss.drive'))->setBucket(Config::get('oss.bucket'));
         $this->object = $this->getModule();
     }
 

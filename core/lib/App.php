@@ -24,6 +24,9 @@ class App
 
     public function init()
     {
+        //加载ENV文件
+        Env::setPath($this->getEnv())->loading();
+
         $configPath = $this->getConfigPath();
         //加载配置文件
         $files = [];
@@ -34,9 +37,6 @@ class App
         foreach ($files as $file) {
             Config::load($file, pathinfo($file, PATHINFO_FILENAME));
         }
-
-        //加载ENV文件
-        Env::setPath($this->getEnv())->loading();
 
         //创建fd共享内存
         FacadeTable::create('fd', [

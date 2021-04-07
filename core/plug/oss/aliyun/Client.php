@@ -2,19 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Anng\Plug\Oos\Aliyun;
+namespace Anng\plug\oss\aliyun;
 
-use Anng\Plug\Oos\Aliyun\http\RequestCore as HttpRequestCore;
-use Anng\Plug\Oos\Aliyun\http\ResponseCore;
+use Anng\plug\Oos\Aliyun\http\RequestCore as HttpRequestCore;
+use Anng\plug\Oos\Aliyun\http\ResponseCore;
 use OSS\Core\MimeTypes;
 use OSS\Core\OssException;
 use OSS\Core\OssUtil;
-use OSS\Http\RequestCore;
 use OSS\Http\RequestCore_Exception;
 use OSS\OssClient;
 use OSS\Result\CallbackResult;
 use OSS\Result\PutSetDeleteResult;
-use Swlib\Http\Response;
 
 class Client extends OssClient
 {

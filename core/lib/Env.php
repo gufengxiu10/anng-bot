@@ -26,6 +26,12 @@ class Env
     }
 
 
+    /**
+     * @name: 设置Env存在的目录
+     * @param {*} $path
+     * @author: ANNG
+     * @return {*}
+     */
     public function setPath($path): static
     {
         $this->path = $path;
@@ -42,7 +48,7 @@ class Env
      */
     public function get(string $name = null)
     {
-        if (is_null($name) || empty($name)) {
+        if (is_null($name) || empty($name) || !isset($_ENV[$name])) {
             return $_ENV;
         } else {
             return $_ENV[$name];

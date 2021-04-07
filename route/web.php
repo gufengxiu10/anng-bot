@@ -8,3 +8,4 @@ Route::get('/dui', [Admin::class, 'list']);
 
 Route::get('download', [Test::class, 'download']);
 Route::get('list', [Test::class, 'list']);
+Route::get('check', [Test::class, 'check']);

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Anng\Plug\Oos\Aliyun\http;
+namespace Anng\plug\oss\aliyun\http;
 
 /**
  * Container for all response-related methods.

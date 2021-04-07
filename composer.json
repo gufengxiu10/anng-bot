@@ -24,6 +24,7 @@
         "swoolex/swoolex": "^2.0",
         "aliyuncs/oss-sdk-php": "^2.4",
         "doctrine/cache": "^1.10",
-        "psr/simple-cache": "^1.0"
+        "psr/simple-cache": "^1.0",
+        "ua-parser/uap-php": "^3.9"
     }
 }

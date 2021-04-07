@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace app\pixiv;
+namespace Anng\plug\pixiv;
 
 use Swlib\Saber;
 
@@ -11,7 +11,6 @@ abstract class Base
     protected function send($method, $uri, $data = [])
     {
         $saber = Saber::create([
-            // 'base_uri' => $this->getBaseUri(),
             'headers'  => array_merge([], $this->getHeaders()),
         ]);
 

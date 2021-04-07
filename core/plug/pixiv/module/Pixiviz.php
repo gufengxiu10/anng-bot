@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace app\pixiv\module;
+namespace Anng\plug\pixiv\module;
 
 use Anng\lib\facade\Cache;
-use app\pixiv\Base;
+use Anng\plug\pixiv\Base;
 
 class Pixiviz extends Base
 {
-    private $baseUri = 'https://pixiviz.pwp.app/api';
+    private $baseUri = 'https://pixiviz.pwp.Anng\plug/api';
 
     /**
      * @name: 日榜
@@ -111,7 +111,7 @@ class Pixiviz extends Base
     public function getHeaders()
     {
         return [
-            'referer' => 'https://pixiviz.pwp.app/',
+            'referer' => 'https://pixiviz.pwp.Anng\plug/',
             'user-agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0',
         ];
     }

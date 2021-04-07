@@ -2,7 +2,6 @@
 
 namespace app\controller\admin;
 
-use Anng\lib\facade\App;
 use Anng\lib\facade\Table;
 
 class Admin
