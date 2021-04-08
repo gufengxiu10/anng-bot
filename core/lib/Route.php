@@ -6,17 +6,18 @@ namespace Anng\lib;
 
 use Anng\lib\facade\App;
 use Anng\lib\route\Dispatch;
+use Anng\lib\route\Group;
 use Symfony\Component\Finder\Finder;
 
 class Route
 {
     private $request;
     public array $routes = [];
+    private $group;
 
     public function send(Request $request)
     {
         $this->request = $request;
-        $this->load();
         return $this->dispatch();
     }
 
@@ -36,6 +37,8 @@ class Route
      */
     public function load()
     {
+        $this->defaultGroup();
+
         $path = App::getRoutePath();
         if (is_dir($path)) {
             $finder = new Finder();
@@ -44,17 +47,36 @@ class Route
                 include_once $file;
             }
         }
+
+        dump($this->routes);
+    }
+
+    private function defaultGroup()
+    {
+        $this->group = new Group($this);
+    }
+
+    /**
+     * @name: 路由分组
+     * @param {*} $rule
+     * @param {callable} $done
+     * @author: ANNG
+     * @return {*}
+     */
+    public function group($rule, callable $done)
+    {
+        new Group($this, $this->group, $rule, $done);
     }
 
     public function get($rule, $route = '')
     {
-        $this->addGroup($rule, $route, 'get');
+        $this->group->setRule($rule, $route, 'get');
         return $this;
     }
 
     public function post($rule, $route = '')
     {
-        $this->addGroup($rule, $route, 'post');
+        $this->group->setRule($rule, $route, 'post');
         return $this;
     }
 

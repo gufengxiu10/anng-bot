@@ -5,6 +5,7 @@ namespace Anng\lib;
 use Anng\lib\app\Server;
 use Anng\lib\facade\Config;
 use Anng\lib\facade\Env;
+use Anng\lib\facade\Route;
 use Anng\lib\facade\Table as FacadeTable;
 use ReflectionException;
 
@@ -27,16 +28,10 @@ class App
         //加载ENV文件
         Env::setPath($this->getEnv())->loading();
 
-        $configPath = $this->getConfigPath();
         //加载配置文件
-        $files = [];
-        if (is_dir($configPath)) {
-            $files = glob($configPath . '*.php');
-        }
-
-        foreach ($files as $file) {
-            Config::load($file, pathinfo($file, PATHINFO_FILENAME));
-        }
+        Config::load();
+        //路由加载
+        Route::load();
 
         //创建fd共享内存
         FacadeTable::create('fd', [

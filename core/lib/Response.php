@@ -27,4 +27,10 @@ class Response
         $this->response = null;
         return $this;
     }
+
+    public function __call($method, $args = [])
+    {
+        call_user_func_array([$this->response, $method], $args);
+        return $this;
+    }
 }

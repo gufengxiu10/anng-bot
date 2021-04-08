@@ -5,25 +5,22 @@ declare(strict_types=1);
 
 namespace Anng\lib;
 
+use Anng\lib\facade\App;
+use Symfony\Component\Finder\Finder;
 
 class Config
 {
     protected $config = [];
 
-    public function load(string $file, string $name = '')
+    public function load(): void
     {
-        $config = [];
-        if (is_file($file)) {
-            $config = include $file;
+        $finder = new Finder;
+        $finder->in(App::getConfigPath())->name('*.php');
+        foreach ($finder->files() as $file) {
+            $config = include_once $file;
+            $key = substr($file->getFilename(), 0, strpos($file->getFilename(), '.'));
+            $this->config = array_merge($this->config, [$key => $config]);
         }
-
-        if (!empty($name)) {
-            $this->config[$name] = $config;
-        } else {
-            $this->config = array_merge($this->config, $config);
-        }
-
-        return $this->config;
     }
 
     /**
