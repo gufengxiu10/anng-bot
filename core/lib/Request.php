@@ -30,11 +30,11 @@ class Request
         return $this->method() == $method ?  true : false;
     }
 
-    public function input($name = '')
+    public function param($name = '', $defalut = '')
     {
         $method = $this->method();
         if (!empty($name)) {
-            return $this->request->$method[$name];
+            return $this->request->$method[$name] ?? $defalut;
         }
         return $this->request->$method;
     }

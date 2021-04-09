@@ -7,6 +7,7 @@ namespace Anng\lib;
 use Anng\lib\facade\App;
 use Anng\lib\route\Dispatch;
 use Anng\lib\route\Group;
+use Anng\lib\route\RuleItem;
 use Symfony\Component\Finder\Finder;
 
 class Route
@@ -47,13 +48,22 @@ class Route
                 include_once $file;
             }
         }
-
-        dump($this->routes);
     }
 
     private function defaultGroup()
     {
         $this->group = new Group($this);
+    }
+
+    public function setGroup(Group $group)
+    {
+        $this->group = $group;
+        return $this;
+    }
+
+    public function getGroup()
+    {
+        return $this->group;
     }
 
     /**
@@ -80,9 +90,8 @@ class Route
         return $this;
     }
 
-    public function addGroup($rule, $route = '', $method = '*')
+    public function addRoutes(RuleItem $item)
     {
-        $this->routes[] = [$method, $rule, $route];
-        return $this;
+        $this->routes[] = $item;
     }
 }

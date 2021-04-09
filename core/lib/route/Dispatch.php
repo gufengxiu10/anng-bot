@@ -27,7 +27,7 @@ class Dispatch
             throw new ResponseException('路由不存在');
         }
 
-        [$controller, $action] = $route[2];
+        [$controller, $action] = $route;
         if (!class_exists($controller)) {
             throw new ResponseException('控制器不存在');
         }
@@ -46,21 +46,12 @@ class Dispatch
         return $data;
     }
 
-    public function getRoute()
-    {
-        return array_filter($this->route->routes, function ($val) {
-            return $this->request->isMethod($val[0]);
-        });
-    }
 
     public function perrlt()
     {
-        $routes = $this->getRoute();
-        $uri = ltrim($this->request->uri(), '/');
-        foreach ($routes as $route) {
-            $rule  = ltrim($route[1], '/');
-            if ($rule == $uri) {
-                return $route;
+        foreach ($this->route->routes as $item) {
+            if ($item->checkMethod($this->request->method()) && $item->checkRule($this->request->uri())) {
+                return $item->getClass();
             }
         }
         return false;

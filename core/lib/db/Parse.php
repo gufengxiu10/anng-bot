@@ -120,4 +120,14 @@ class Parse
         }
         return 'limit ' . $limit;
     }
+
+    public function offset()
+    {
+        $offset = $this->connection['offset'] ?? '';
+        if (empty($offset)) {
+            return '';
+        }
+        
+        return 
+    }
 }

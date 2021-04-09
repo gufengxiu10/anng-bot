@@ -6,6 +6,7 @@ namespace Anng\lib\db;
 
 use Anng\lib\Db;
 use Anng\lib\db\biluder\Mysql;
+use PDO;
 use Swoole\Database\PDOProxy;
 
 class Sql
@@ -15,6 +16,7 @@ class Sql
     protected $pool;
     protected $biluder;
     protected $parse;
+
 
     //表名
     public string|null $table = null;
@@ -31,6 +33,8 @@ class Sql
     public string|array|null|int $limit = null;
 
     public array $data = [];
+
+    public $offset;
 
     private bool $isSql = false;
 
@@ -111,6 +115,12 @@ class Sql
     public function limit($limit)
     {
         $this->limit = $limit;
+        return $this;
+    }
+
+    public function offset($offset)
+    {
+        $this->offset = $offset;
         return $this;
     }
 
@@ -231,8 +241,7 @@ class Sql
             throw new \Exception('Execute failed');
         }
 
-        $data = $statement->fetchAll();
-        return $data;
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
 
