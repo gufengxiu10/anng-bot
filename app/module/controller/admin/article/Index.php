@@ -17,7 +17,7 @@ class Index extends Controller
     public function lists()
     {
         return $this->service(ArticleIndex::class)
-            ->limit(Request::param('page', 1), Request::param('limit', 1))
+            // ->limit(Request::param('page', 1), Request::param('limit', 1))
             ->lists();
     }
 

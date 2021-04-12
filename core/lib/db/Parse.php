@@ -127,7 +127,5 @@ class Parse
         if (empty($offset)) {
             return '';
         }
-        
-        return 
     }
 }
