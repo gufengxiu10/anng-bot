@@ -6,35 +6,21 @@ namespace Anng\lib\db;
 
 use Anng\lib\Db;
 use Anng\lib\db\biluder\Mysql;
+use Anng\lib\db\biluder\sql\Conditions;
 use PDO;
 use Swoole\Database\PDOProxy;
 
 class Sql
 {
+    use Conditions;
+
     protected PDOProxy $baseConnection;
     protected $connection;
     protected $pool;
     protected $biluder;
     protected $parse;
 
-
-    //表名
-    public string|null $table = null;
-
-    //字段
-    public string|array $field = '*';
-
-    //别名
-    public string|null $alias = null;
-
-    //条件
-    public array $where = [];
-
-    public string|array|null|int $limit = null;
-
     public array $data = [];
-
-    public $offset;
 
     private bool $isSql = false;
 
@@ -42,8 +28,8 @@ class Sql
     {
         $this->db = $db;
         $this->baseConnection = $db->getPool()->get();
-        $this->biluder = new Mysql();
         $this->parse = new Parse();
+        $this->biluder = new Mysql($this->parse);
         $this->connection = new Connection($this->baseConnection, $this->parse);
         $this->config = $config;
     }
@@ -51,77 +37,6 @@ class Sql
     public function getConnection()
     {
         return $this->connection;
-    }
-
-    /**
-     * @name: 设置表
-     * @param {*}
-     * @author: ANNG
-     * @Date: 2021-01-28 10:41:08
-     * @return static
-     */
-    public function name($val): static
-    {
-        $this->table = is_null($this->config->get('prefix')) ? $val :  $this->config->get('prefix') . $val;
-        return $this;
-    }
-
-    /**
-     * @name: 设置查询字段
-     * @param string|array|bool $val 字段值
-     * @author: ANNG
-     * @todo: 
-     * @Date: 2021-01-28 13:47:17
-     * @return {*}
-     */
-    public function field(string|array|bool $val): static
-    {
-        if ($val === false) {
-            $val = '*';
-        }
-        $this->field = $val;
-        return $this;
-    }
-
-    /**
-     * @name: 别名
-     * @param string $val 别名值
-     * @author: ANNG
-     * @todo: 
-     * @Date: 2021-01-28 13:51:43
-     * @return {*}
-     */
-    public function alias(string $val): static
-    {
-        $this->alias = $val;
-        return $this;
-    }
-
-    /**
-     * @name: 条件
-     * @param {*}
-     * @author: ANNG
-     * @todo: 
-     * @Date: 2021-02-02 16:10:22
-     * @return {*}
-     */
-    public function where($field, $condition, $value = null)
-    {
-        $where = [$field, $condition, $value];
-        array_push($this->where, $where);
-        return $this;
-    }
-
-    public function limit($limit)
-    {
-        $this->limit = $limit;
-        return $this;
-    }
-
-    public function offset($offset)
-    {
-        $this->offset = $offset;
-        return $this;
     }
 
     /**
@@ -135,7 +50,7 @@ class Sql
     public  function insert(array $data)
     {
         $this->data = $data;
-        $sql = $this->parse()->insert();
+        $sql = $this->biluder->insert();
 
         $pk = $this->connection->getPk();
         if ($this->isSql === true) {
@@ -165,7 +80,7 @@ class Sql
     public function insertId($data)
     {
         $this->data = $data;
-        $sql = $this->parse()->insert();
+        $sql = $this->biluder->insert();
         $statement = $this->connection->prepare($sql);
         if (!$statement) {
             throw new \Exception('Prepare failed');
@@ -190,7 +105,7 @@ class Sql
     public function insertAll(array $data)
     {
         $this->data = $data;
-        $sql = $this->parse()->insertAll();
+        $sql = $this->biluder->insertAll();
         if ($this->isSql === true) {
             return $sql;
         }
@@ -215,7 +130,7 @@ class Sql
      */
     public function find()
     {
-        $sql = $this->parse()->find();
+        $sql = $this->biluder->find();
         $statement = $this->connection->prepare($sql);
         if (!$statement) {
             throw new \Exception('Prepare failed');
@@ -231,7 +146,10 @@ class Sql
 
     public function select()
     {
-        $sql = $this->parse()->select();
+        $sql = $this->biluder->select();
+        if ($this->isSql === true) {
+            return $sql;
+        }
         $statement = $this->connection->prepare($sql);
         if (!$statement) {
             throw new \Exception('Prepare failed');
@@ -258,20 +176,6 @@ class Sql
         $this->field = '*';
         $this->alias = null;
         $this->data = [];
-    }
-
-    private  function parse()
-    {
-        $this->parse->setData([
-            'where' => $this->where,
-            'table' => $this->table,
-            'field' => $this->field,
-            'alias' => $this->alias,
-            'data'  => $this->data,
-        ]);
-
-        $this->biluder->setParse($this->parse);
-        return $this->biluder;
     }
 
     public function __destruct()

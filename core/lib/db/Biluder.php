@@ -9,16 +9,16 @@ use Anng\lib\db\biluder\sql\Insert;
 abstract class Biluder
 {
 
+    public function __construct(private Parse $parse)
+    {
+        # code...
+    }
+
     use Insert;
 
     protected array $option = [];
 
     protected $selectFindSql = "SELECT %FIELD% FROM %TABLE% %WHERE% %LIMIT%";
-
-    public function setParse($parse)
-    {
-        $this->parse = $parse;
-    }
 
     /**
      * @name: 

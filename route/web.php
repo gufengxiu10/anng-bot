@@ -15,6 +15,8 @@ Route::group('api', function () {
 
 
     Route::group('article', function () {
+        Route::get('/:id/pi/:ku', [ArticleIndex::class, 'info']);
+        Route::get('/bki/ul/:kjjj', [ArticleIndex::class, 'info']);
         Route::get('/', [ArticleIndex::class, 'lists']);
         Route::post('/add', [ArticleIndex::class, 'add']);
     });

@@ -6,6 +6,21 @@ namespace Anng\lib\db;
 
 class Parse
 {
+    //表名
+    public string|null $table = null;
+
+    //字段
+    public string|array $field = '*';
+
+    //别名
+    public string|null $alias = null;
+
+    //条件
+    public array $where = [];
+
+    public string|array|null|int $limit = null;
+
+    public $offset;
 
     public $connection = [];
 
@@ -24,7 +39,7 @@ class Parse
      */
     public function field()
     {
-        return $this->connection['field'];
+        return $this->field;
     }
 
 
@@ -38,9 +53,9 @@ class Parse
      */
     public function table()
     {
-        $table = $this->connection['table'];
-        if ($this->connection['alias']) {
-            $table .= ' AS ' . $this->connection['alias'];
+        $table = $this->table;
+        if ($this->alias) {
+            $table .= ' AS ' . $this->alias;
         }
 
         return $table;
@@ -56,7 +71,7 @@ class Parse
      */
     public function where()
     {
-        $where = $this->connection['where'] ?: [];
+        $where = $this->where ?: [];
         if (empty($where)) {
             return '';
         }
@@ -89,7 +104,7 @@ class Parse
      */
     public function data($data = [], $handle = true)
     {
-        $data = $data ?: $this->connection['data'] ?: [];
+        $data = $data ?: $this->data ?: [];
 
         $re = [];
         if ($handle === true) {
@@ -114,16 +129,16 @@ class Parse
 
     public function limit()
     {
-        $limit = $this->connection['limit'] ?? '';
-        if (empty($limit)) {
+        if (empty($this->limit)) {
             return '';
         }
-        return 'limit ' . $limit;
+
+        return 'limit ' . $this->limit;
     }
 
     public function offset()
     {
-        $offset = $this->connection['offset'] ?? '';
+        $offset = $this->offset ?? '';
         if (empty($offset)) {
             return '';
         }

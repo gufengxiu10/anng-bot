@@ -6,9 +6,11 @@ use Anng\lib\facade\Db;
 
 class Index
 {
-    public function lists()
+    public function lists($page, $limit)
     {
-        return Db::name('article')->select();
+        return Db::name('article')
+            ->limit($page, $limit)
+            ->select();
     }
 
     public function info($id)

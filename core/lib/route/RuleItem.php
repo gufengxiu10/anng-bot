@@ -10,10 +10,22 @@ use Anng\lib\Route as LibRoute;
 class RuleItem
 {
     private $fullName;
+    private $groupName;
+    private $nameArray = [];
+    private $param = [];
+
+    private $necessaryKey = [];
 
     public function __construct(private Route|LibRoute $route, private Group $group, private $name, private $class, private $method)
     {
+        $this->nameArray = array_filter(explode('/', $this->name));
+        $this->setGroupName();
         $this->parseName();
+    }
+
+    public function setGroupName()
+    {
+        $this->groupName = $this->group->getGroup();
     }
 
     /**
@@ -24,11 +36,53 @@ class RuleItem
      */
     public function parseName(): void
     {
-        if ($this->name == '/') {
-            $this->fullName = implode('/', array_merge($this->group->getGroup()));
-        } else {
-            $this->fullName = implode('/', array_merge($this->group->getGroup(), [ltrim($this->name, '/')]));
+        $this->fullName = $this->name == '/' ? array_merge($this->groupName) : array_merge($this->groupName, $this->nameArray);
+        // if( count($this->fullName)
+        // preg_match_all('/\:[\d|a-z|A-Z]*/', $this->name, $matches);
+        // foreach ($matches[0] as $matche) {
+        //     $this->necessaryKey[] = ltrim($matche, ':');
+        // }
+        $url = '/api/article/100/pi/60';
+        $url = explode('/', ltrim($url, '/'));
+        if (count($url) != count($this->fullName)) {
+            dump(1);
         }
+
+        foreach ($this->fullName as $key => $value) {
+            if ($value == $url[$key]) {
+                continue;
+            }
+
+            if (!str_contains($value, ':')) {
+                // $this->param = [];
+                break;
+            }
+
+            $this->param[ltrim($value, ':')] = $url[$key];
+        }
+        dump($this->param);
+        // dump(implode('/', $this->groupName));
+        // dump(implode('/', $this->groupName));
+        // dump($this->necessaryKey);
+    }
+
+    public function fullNameToString()
+    {
+        return implode('/', $this->fullName);
+    }
+
+    /**
+     * @name: 规则分析
+     * @param {*}
+     * @author: ANNG
+     * @return {*}
+     */
+    private function ruleAnalysis($rule): bool
+    {
+        preg_replace_callback('/\:[\d|a-z|A-Z]*/', function ($matche) {
+            dump($matche);
+        }, $rule);
+        return true;
     }
 
     /**
@@ -61,6 +115,8 @@ class RuleItem
      */
     public function checkRule($rule)
     {
+        dump($rule);
+        // $this->ruleAnalysis($rule);
         return $this->fullName == trim($rule, '/') ? true : false;
     }
 
