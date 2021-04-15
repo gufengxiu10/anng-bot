@@ -90,6 +90,12 @@ class Route
         return $this;
     }
 
+    public function put($rule, $route = '')
+    {
+        $this->group->setRule($rule, $route, 'put');
+        return $this;
+    }
+
     public function addRoutes(RuleItem $item)
     {
         $this->routes[] = $item;

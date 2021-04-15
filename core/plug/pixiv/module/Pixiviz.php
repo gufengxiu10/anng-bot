@@ -9,7 +9,7 @@ use Anng\plug\pixiv\Base;
 
 class Pixiviz extends Base
 {
-    private $baseUri = 'https://pixiviz.pwp.Anng\plug/api';
+    private $baseUri = 'https://pixiviz.pwp.app/api';
 
     /**
      * @name: 日榜
@@ -103,6 +103,14 @@ class Pixiviz extends Base
         ]);
     }
 
+
+    public function detail($id)
+    {
+        return $this->send('get', '/v1/illust/detail', [
+            'id'    => $id
+        ]);
+    }
+
     public function getBaseUri()
     {
         return $this->baseUri;
@@ -111,7 +119,7 @@ class Pixiviz extends Base
     public function getHeaders()
     {
         return [
-            'referer' => 'https://pixiviz.pwp.Anng\plug/',
+            'referer' => 'https://pixiviz.pwp.app/rank',
             'user-agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0',
         ];
     }

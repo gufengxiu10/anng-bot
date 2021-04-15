@@ -15,7 +15,8 @@ class Index
 
     public function info($id)
     {
-        # code...
+        return Db::name('article')
+            ->find($id);
     }
 
     public function insert($data)

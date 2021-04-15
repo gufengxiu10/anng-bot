@@ -14,8 +14,6 @@ class RuleItem
     private $nameArray = [];
     private $param = [];
 
-    private $necessaryKey = [];
-
     public function __construct(private Route|LibRoute $route, private Group $group, private $name, private $class, private $method)
     {
         $this->nameArray = array_filter(explode('/', $this->name));
@@ -37,33 +35,6 @@ class RuleItem
     public function parseName(): void
     {
         $this->fullName = $this->name == '/' ? array_merge($this->groupName) : array_merge($this->groupName, $this->nameArray);
-        // if( count($this->fullName)
-        // preg_match_all('/\:[\d|a-z|A-Z]*/', $this->name, $matches);
-        // foreach ($matches[0] as $matche) {
-        //     $this->necessaryKey[] = ltrim($matche, ':');
-        // }
-        $url = '/api/article/100/pi/60';
-        $url = explode('/', ltrim($url, '/'));
-        if (count($url) != count($this->fullName)) {
-            dump(1);
-        }
-
-        foreach ($this->fullName as $key => $value) {
-            if ($value == $url[$key]) {
-                continue;
-            }
-
-            if (!str_contains($value, ':')) {
-                // $this->param = [];
-                break;
-            }
-
-            $this->param[ltrim($value, ':')] = $url[$key];
-        }
-        dump($this->param);
-        // dump(implode('/', $this->groupName));
-        // dump(implode('/', $this->groupName));
-        // dump($this->necessaryKey);
     }
 
     public function fullNameToString()
@@ -79,9 +50,23 @@ class RuleItem
      */
     private function ruleAnalysis($rule): bool
     {
-        preg_replace_callback('/\:[\d|a-z|A-Z]*/', function ($matche) {
-            dump($matche);
-        }, $rule);
+        $url = explode('/', ltrim($rule, '/'));
+        if (count($url) != count($this->fullName)) {
+            return false;
+        }
+
+        foreach ($this->fullName as $key => $value) {
+            if ($value == $url[$key]) {
+                continue;
+            }
+
+            if (!str_contains($value, ':')) {
+                $this->param = [];
+                return false;
+            }
+
+            $this->param[ltrim($value, ':')] = $url[$key];
+        }
         return true;
     }
 
@@ -115,9 +100,7 @@ class RuleItem
      */
     public function checkRule($rule)
     {
-        dump($rule);
-        // $this->ruleAnalysis($rule);
-        return $this->fullName == trim($rule, '/') ? true : false;
+        return $this->ruleAnalysis($rule);
     }
 
     /**
@@ -129,5 +112,10 @@ class RuleItem
     public function getClass()
     {
         return $this->class;
+    }
+
+    public function getParam()
+    {
+        return $this->param;
     }
 }

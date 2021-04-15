@@ -7,6 +7,7 @@ namespace Anng\lib\route;
 use Anng\lib\exception\ResponseException;
 use Anng\lib\facade\App;
 use Anng\lib\facade\Reflection;
+use ReflectionClass;
 
 class Dispatch
 {
@@ -27,17 +28,24 @@ class Dispatch
             throw new ResponseException('路由不存在');
         }
 
-        [$controller, $action] = $route;
+        [$controller, $action] = $route->getClass();
         if (!class_exists($controller)) {
             throw new ResponseException('控制器不存在');
         }
 
-        $object = Reflection::instance($controller);
-        if (!method_exists($object, $action)) {
+        $reflection = new ReflectionClass($controller);
+        $args = [];
+        if ($construct = $reflection->getConstructor()) {
+            $args = Reflection::parseData($construct);
+        }
+
+        $controllerObject = $reflection->newInstanceArgs($args);
+        if (!$reflection->hasMethod($action)) {
             throw new ResponseException('方法不存在');
         }
 
-        $data = $object->$action();
+        $methodArgs = Reflection::parseData($reflection->getMethod($action), $route->getParam());
+        $data = call_user_func_array([$controllerObject, $action], $methodArgs);
 
         if (is_array($data)) {
             $data = json_encode($data, JSON_UNESCAPED_UNICODE);
@@ -51,7 +59,7 @@ class Dispatch
     {
         foreach ($this->route->routes as $item) {
             if ($item->checkMethod($this->request->method()) && $item->checkRule($this->request->uri())) {
-                return $item->getClass();
+                return $item;
             }
         }
         return false;

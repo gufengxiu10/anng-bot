@@ -128,8 +128,12 @@ class Sql
      * @Date: 2021-02-01 09:48:45
      * @return {*}
      */
-    public function find()
+    public function find(int|string $id = null)
     {
+        if (!empty($id)) {
+            $this->where($this->connection->getPk(), (int)$id);
+        }
+
         $sql = $this->biluder->find();
         $statement = $this->connection->prepare($sql);
         if (!$statement) {
@@ -140,7 +144,7 @@ class Sql
             throw new \Exception('Execute failed');
         }
 
-        $data = $statement->fetch();
+        $data = $statement->fetch(PDO::FETCH_ASSOC);
         return $data;
     }
 

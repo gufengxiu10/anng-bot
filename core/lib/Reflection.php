@@ -65,7 +65,7 @@ class Reflection
      * @todo: 
      * @Date: 2021-02-03 09:29:11
      */
-    private function parseData(ReflectionMethod $refl, array $args = []): array
+    public function parseData(ReflectionMethod $refl, array $args = []): array
     {
         $params = $refl->getParameters();
         if (empty($params)) {

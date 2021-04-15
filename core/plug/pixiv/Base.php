@@ -20,7 +20,10 @@ abstract class Base
         }
 
         $uri = $this->getBaseUri() . $uri;
-        return $saber->request(['method' => $method, 'uri' => $uri, $data]);
+        dump($uri);
+        return $saber->request(['method' => $method, 'uri' => $uri, $data, [
+            'timeout' => 60
+        ]]);
     }
 
     abstract function getBaseUri();
