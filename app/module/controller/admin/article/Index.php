@@ -3,7 +3,6 @@
 namespace app\module\controller\admin\article;
 
 use Anng\lib\facade\Request;
-use Anng\plug\pixiv\module\Pixiviz;
 use app\module\Controller;
 use app\module\service\article\Index as ArticleIndex;
 
@@ -43,6 +42,7 @@ class Index extends Controller
         return $this->service(ArticleIndex::class)->insert([
             'title'         => Request::param('title'),
             'subtitle'      => Request::param('subtitle'),
+            'content'       => Request::param('content'),
             'create_time'   => time(),
             'update_time'   => time(),
         ]);
@@ -54,8 +54,25 @@ class Index extends Controller
      * @author: ANNG
      * @return {*}
      */
-    public function update()
+    public function update($id)
     {
-        return (new Pixiviz)->day('2021-04-10');
+        return $this->service(ArticleIndex::class)->update($id, [
+            'title'         => Request::param('title'),
+            'subtitle'      => Request::param('subtitle', ''),
+            'password'      => Request::param('password', '')
+        ]);
+    }
+
+    /**
+     * @name: 设置文章密码
+     * @param {*}
+     * @author: ANNG
+     * @return {*}
+     */
+    public function setPassword($id)
+    {
+        return $this->service(ArticleIndex::class)->update($id, [
+            'password'      => Request::param('password')
+        ]);
     }
 }

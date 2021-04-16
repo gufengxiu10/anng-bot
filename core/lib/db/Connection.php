@@ -51,6 +51,11 @@ class Connection
         return $this->tableFileInfo[$table];
     }
 
+    public function has($table, $field)
+    {
+        return isset($this->tableFileInfo[$table][$field]) ? true : false;
+    }
+
     public function __call($method, $args)
     {
         return call_user_func_array([$this->connect, $method], $args);

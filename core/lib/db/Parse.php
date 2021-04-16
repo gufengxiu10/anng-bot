@@ -24,6 +24,7 @@ class Parse
 
     public $connection = [];
 
+
     public function setData($data)
     {
         $this->connection = $data;
@@ -59,6 +60,16 @@ class Parse
         }
 
         return $table;
+    }
+
+    public function set()
+    {
+        // dump($this->set);
+        $sql = [];
+        foreach ($this->set as $k => $v) {
+            $sql[] = "`{$k}` = " . (is_int($v) ? $v : "'{$v}'");
+        }
+        return implode(',', $sql);
     }
 
     /**
@@ -105,7 +116,6 @@ class Parse
     public function data($data = [], $handle = true)
     {
         $data = $data ?: $this->data ?: [];
-
         $re = [];
         if ($handle === true) {
             foreach ($data as $key => $value) {
@@ -142,5 +152,10 @@ class Parse
         if (empty($offset)) {
             return '';
         }
+    }
+
+    public function isEmpty($condition)
+    {
+        return empty($this->$condition) ? true : false;
     }
 }

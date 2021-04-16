@@ -21,6 +21,7 @@ Route::group('api', function () {
         Route::get('/', [ArticleIndex::class, 'lists']);
         Route::post('/add', [ArticleIndex::class, 'add']);
         Route::put('/:id', [ArticleIndex::class, 'update']);
+        Route::delete('/:id', [ArticleIndex::class, 'update']);
     });
 
 

@@ -7,6 +7,7 @@ namespace Anng\lib\db;
 use Anng\lib\Db;
 use Anng\lib\db\biluder\Mysql;
 use Anng\lib\db\biluder\sql\Conditions;
+use Anng\lib\exception\DbException;
 use PDO;
 use Swoole\Database\PDOProxy;
 
@@ -39,6 +40,35 @@ class Sql
         return $this->connection;
     }
 
+    public function update(array $data)
+    {
+
+        if ($this->parse->isEmpty('where')) {
+            throw new DbException('至少需要一个更新条件');
+        }
+
+        $pk = $this->connection->getPk();
+        if (array_key_exists($pk, $data)) {
+            $this->where($pk, $data[$pk]);
+            unset($data[$this->connection->getPk()]);
+        }
+        $this->parse->set = $data;
+        $sql = $this->biluder->update();
+        if ($this->isSql === true) {
+            return $sql;
+        }
+        $statement = $this->connection->prepare($sql);
+        if (!$statement) {
+            throw new \Exception('Prepare failed');
+        }
+        $result = $statement->execute();
+        if (!$result) {
+            throw new \Exception('Execute failed');
+        }
+
+        return $statement->rowCount();
+    }
+
     /**
      * @name: 添加
      * @param {*}
@@ -49,7 +79,7 @@ class Sql
      */
     public  function insert(array $data)
     {
-        $this->data = $data;
+        $this->parse->data = $data;
         $sql = $this->biluder->insert();
 
         $pk = $this->connection->getPk();
@@ -79,7 +109,7 @@ class Sql
      */
     public function insertId($data)
     {
-        $this->data = $data;
+        $this->parse->data = $data;
         $sql = $this->biluder->insert();
         $statement = $this->connection->prepare($sql);
         if (!$statement) {
@@ -104,7 +134,7 @@ class Sql
      */
     public function insertAll(array $data)
     {
-        $this->data = $data;
+        $this->parse->data = $data;
         $sql = $this->biluder->insertAll();
         if ($this->isSql === true) {
             return $sql;

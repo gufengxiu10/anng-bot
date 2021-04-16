@@ -3,6 +3,7 @@
 namespace app\module\service\article;
 
 use Anng\lib\facade\Db;
+use Exception;
 
 class Index
 {
@@ -21,6 +22,29 @@ class Index
 
     public function insert($data)
     {
-        Db::name('article')->insert($data);
+        $info = Db::name('article')->insert([
+            'title'         => $data['title'],
+            'subtitle'      => $data['subtitle'],
+            'create_time'   => time(),
+            'update_time'   => time(),
+        ]);
+
+        if ($info && isset($data['content'])) {
+            Db::name('article_content')->insert([
+                'aid'           => $info['id'],
+                'content'       => $data['content'],
+                'update_time'   => time(),
+                'create_time'   => time(),
+            ]);
+        }
+    }
+
+    public function update($id, $data)
+    {
+        Db::name('article')->where('id', $id)->update($data);
+        if (isset($data['content'])) {
+            Db::name('article')->where('id', $id)->update([]);
+        }
+        return;
     }
 }

@@ -12,6 +12,7 @@ use Anng\lib\Db;
 use Anng\lib\Table;
 use Anng\lib\Annotations;
 use Anng\lib\cache\Cache;
+use Anng\lib\exception\Handle;
 use Anng\lib\Messages;
 use Anng\lib\Route;
 use Anng\lib\Request;
@@ -21,22 +22,23 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
 $container = new Container;
 
 $container->bind([
-    'App'           => App::class,
-    'Facade'        => Facade::class,
-    'Config'        => Config::class,
-    'Redis'         => Redis::class,
-    'Env'           => Env::class,
-    'Db'            => Db::class,
-    'Crontab'       => Crontab::class,
-    'Connect'       => Connect::class,
-    'Table'         => Table::class,
-    'Annotations'   => Annotations::class,
-    'Messages'      => Messages::class,
-    'Request'       => Request::class,
-    'Response'      => Response::class,
-    'Messages'      => Messages::class,
-    'Route'         => Route::class,
-    'Cache'         => Cache::class
+    'App'               => App::class,
+    'Facade'            => Facade::class,
+    'Config'            => Config::class,
+    'Redis'             => Redis::class,
+    'Env'               => Env::class,
+    'Db'                => Db::class,
+    'Crontab'           => Crontab::class,
+    'Connect'           => Connect::class,
+    'Table'             => Table::class,
+    'Annotations'       => Annotations::class,
+    'Messages'          => Messages::class,
+    'Request'           => Request::class,
+    'Response'          => Response::class,
+    'Messages'          => Messages::class,
+    'Route'             => Route::class,
+    'Cache'             => Cache::class,
+    'Exception'         => Handle::class
 ]);
 
 require_once 'Helper.php';

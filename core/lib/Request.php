@@ -9,10 +9,25 @@ use Swoole\Http\Request as HttpRequest;
 class Request
 {
     private $request = null;
+    private $param = [];
 
     public function send(HttpRequest $request)
     {
         $this->request = $request;
+        $this->setParam();
+    }
+
+    public function setParam(): void
+    {
+        if ($this->request->header['content-type'] == 'application/json') {
+            $this->param = json_decode($this->request->getContent(), true);
+        } else {
+            if ($this->method() != 'get') {
+                $this->param = $this->request->post;
+            } else {
+                $this->param = $this->request->get;
+            }
+        }
     }
 
     public function uri()
@@ -32,11 +47,10 @@ class Request
 
     public function param($name = '', $defalut = '')
     {
-        $method = $this->method();
         if (!empty($name)) {
-            return $this->request->$method[$name] ?? $defalut;
+            return $this->param[$name] ?? $defalut;
         }
-        return $this->request->$method;
+        return $this->param;
     }
 
     /**
