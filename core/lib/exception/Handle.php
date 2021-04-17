@@ -16,7 +16,7 @@ class Handle
 
     public function default(Throwable $th)
     {
-        return $th->getMessage();
+        return $th->getFile() . '|' . $th->getLine() . '|' . $th->getMessage();
     }
 
     public function render(Throwable $th)

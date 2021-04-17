@@ -16,7 +16,7 @@ class RuleItem
 
     public function __construct(private Route|LibRoute $route, private Group $group, private $name, private $class, private $method)
     {
-        $this->nameArray = array_filter(explode('/', $this->name));
+        $this->nameArray = array_filter(explode('/', ltrim($this->name, '/')));
         $this->setGroupName();
         $this->parseName();
     }
@@ -50,7 +50,11 @@ class RuleItem
      */
     private function ruleAnalysis($rule): bool
     {
+        // dump($rule);
+        // dump($this->fullName);
+        //TODO::此处路由数量相同时会按先上到下的来优先匹配的
         $url = explode('/', ltrim($rule, '/'));
+
         if (count($url) != count($this->fullName)) {
             return false;
         }

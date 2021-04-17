@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace Anng\lib\db;
 
 
-class Connection
+class Accident
 {
     private $tableFileInfo = [];
 

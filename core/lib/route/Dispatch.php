@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Anng\lib\route;
 
+use Anng\lib\Collection;
 use Anng\lib\exception\ResponseException;
 use Anng\lib\facade\App;
 use Anng\lib\facade\Reflection;
@@ -49,11 +50,12 @@ class Dispatch
 
         if (is_array($data)) {
             $data = json_encode($data, JSON_UNESCAPED_UNICODE);
+        } else if ($data instanceof Collection) {
+            $data = json_encode($data->toArray(), JSON_UNESCAPED_UNICODE);
         }
 
         return $data;
     }
-
 
     public function perrlt()
     {

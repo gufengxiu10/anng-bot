@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Anng\lib\db;
 
+use Anng\lib\db\Collection;
 use Anng\lib\Db;
 use Anng\lib\db\biluder\Mysql;
 use Anng\lib\db\biluder\sql\Conditions;
@@ -31,7 +32,7 @@ class Sql
         $this->baseConnection = $db->getPool()->get();
         $this->parse = new Parse();
         $this->biluder = new Mysql($this->parse);
-        $this->connection = new Connection($this->baseConnection, $this->parse);
+        $this->connection = new Accident($this->baseConnection, $this->parse);
         $this->config = $config;
     }
 
@@ -96,7 +97,7 @@ class Sql
         }
 
         $id = $this->connection->lastInsertId();
-        return array_merge($data, [$pk => $id]);
+        return Collection::make(array_merge($data, [$pk => $id]));
     }
 
     /**
@@ -175,7 +176,7 @@ class Sql
         }
 
         $data = $statement->fetch(PDO::FETCH_ASSOC);
-        return $data;
+        return Collection::make($data);
     }
 
     public function select()
@@ -193,7 +194,8 @@ class Sql
             throw new \Exception('Execute failed');
         }
 
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $list = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return Collection::make($list);
     }
 
 

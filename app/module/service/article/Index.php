@@ -16,8 +16,14 @@ class Index
 
     public function info($id)
     {
-        return Db::name('article')
+        $info = Db::name('article')
             ->find($id);
+
+        if ($info->isEmpty()) {
+            throw new Exception('数据不存在');
+        }
+
+        return $info;
     }
 
     public function insert($data)

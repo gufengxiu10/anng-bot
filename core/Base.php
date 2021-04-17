@@ -12,6 +12,7 @@ use Anng\lib\Db;
 use Anng\lib\Table;
 use Anng\lib\Annotations;
 use Anng\lib\cache\Cache;
+use Anng\lib\Collection as LibCollection;
 use Anng\lib\exception\Handle;
 use Anng\lib\Messages;
 use Anng\lib\Route;
