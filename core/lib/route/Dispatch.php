@@ -36,6 +36,7 @@ class Dispatch
 
         $reflection = new ReflectionClass($controller);
         $args = [];
+
         if ($construct = $reflection->getConstructor()) {
             $args = Reflection::parseData($construct);
         }
@@ -46,6 +47,8 @@ class Dispatch
         }
 
         $methodArgs = Reflection::parseData($reflection->getMethod($action), $route->getParam());
+        dump($methodArgs);
+        return 1;
         $data = call_user_func_array([$controllerObject, $action], $methodArgs);
 
         if (is_array($data)) {

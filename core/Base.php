@@ -12,15 +12,14 @@ use Anng\lib\Db;
 use Anng\lib\Table;
 use Anng\lib\Annotations;
 use Anng\lib\cache\Cache;
-use Anng\lib\Collection as LibCollection;
-use Anng\lib\exception\Handle;
+use Anng\lib\Exception;
 use Anng\lib\Messages;
 use Anng\lib\Route;
 use Anng\lib\Request;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
-$container = new Container;
+$container = new App;
 
 $container->bind([
     'App'               => App::class,
@@ -39,7 +38,7 @@ $container->bind([
     'Messages'          => Messages::class,
     'Route'             => Route::class,
     'Cache'             => Cache::class,
-    'Exception'         => Handle::class
+    'Exception'         => Exception::class
 ]);
 
 require_once 'Helper.php';

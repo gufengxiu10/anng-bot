@@ -6,9 +6,9 @@ namespace app\module\controller\admin;
 
 use Anng\lib\facade\Request;
 use Anng\plug\pixiv\module\Pixiviz;
-use app\module\Controller;
+use app\BaseController;
 
-class Pixiv extends Controller
+class Pixiv extends BaseController
 {
     public function lists()
     {

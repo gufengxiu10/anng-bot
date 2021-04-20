@@ -15,7 +15,7 @@ class File extends LibCache
     public function create()
     {
         if (!$this->client) {
-            $this->client = new FilesystemCache(App::getRootPath('runtime/cache'));
+            $this->client = new FilesystemCache(App::rootPath('runtime/cache'));
         }
 
         return $this;
@@ -24,6 +24,6 @@ class File extends LibCache
     public function clear()
     {
         $finder = new Filesystem;
-        $finder->remove(App::getRootPath('runtime/cache'));
+        $finder->remove(App::rootPath('runtime/cache'));
     }
 }

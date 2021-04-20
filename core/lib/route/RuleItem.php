@@ -54,7 +54,6 @@ class RuleItem
         // dump($this->fullName);
         //TODO::此处路由数量相同时会按先上到下的来优先匹配的
         $url = explode('/', ltrim($rule, '/'));
-
         if (count($url) != count($this->fullName)) {
             return false;
         }

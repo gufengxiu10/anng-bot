@@ -1,7 +1,7 @@
 <?php
 
-use Anng\lib\Container;
+use Anng\lib\facade\App;
 
 require_once './../core/Base.php';
 
-Container::getInstance()->app->start();
+App::start();

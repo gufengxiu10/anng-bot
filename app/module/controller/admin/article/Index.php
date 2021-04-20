@@ -3,10 +3,11 @@
 namespace app\module\controller\admin\article;
 
 use Anng\lib\facade\Request;
-use app\module\Controller;
+use app\BaseController;
+use app\module\requests\Article as ArticleRequest;
 use app\module\service\article\Index as ArticleIndex;
 
-class Index extends Controller
+class Index extends BaseController
 {
     /**
      * @name: 获得文章列表
@@ -14,8 +15,9 @@ class Index extends Controller
      * @author: ANNG
      * @return {*}
      */
-    public function lists()
+    public function lists(ArticleRequest $request, ArticleRequest $request2)
     {
+        dump($request);
         return $this->service(ArticleIndex::class)
             ->lists(Request::param('page', 1), Request::param('limit', 10));
     }

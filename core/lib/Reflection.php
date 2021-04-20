@@ -7,6 +7,7 @@ namespace Anng\lib;
 use Exception;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionNamedType;
 
 class Reflection
 {
@@ -84,11 +85,7 @@ class Reflection
                 if (isset($args[$paramName])) {
                     $data[] = $args[$paramName];
                 } else {
-                    if ($this->container) {
-                        $data[] = $this->container->get($name);
-                    } else {
-                        $data[] = $this->instance($name, $args, false);
-                    }
+                    $data[] = $this->instance($name, $args, false);
                 }
             } else {
                 if ($type == 1 && !empty($args)) {

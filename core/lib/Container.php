@@ -89,8 +89,8 @@ class Container implements ContainerInterface
 
     /**
      * @name: 绑定一个实例到容器
-     * @param {*} string
-     * @param {*} $instance
+     * @param string $abstract 标识名
+     * @param {*} $instance 容器
      * @author: ANNG
      * @todo: 
      * @Date: 2021-01-09 15:22:06

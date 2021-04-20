@@ -2,17 +2,11 @@
 
 namespace Anng\lib;
 
+use Anng\lib\app\Bootstrap;
 use Anng\lib\app\Server;
-use Anng\lib\facade\Config;
-use Anng\lib\facade\Env;
-use Anng\lib\facade\Route;
-use Anng\lib\facade\Table as FacadeTable;
 use ReflectionException;
 
-use Swoole\Table;
-
-
-class App
+class App extends Container
 {
     //根目录
     protected $rootPath;
@@ -21,31 +15,18 @@ class App
     {
         date_default_timezone_set("Asia/Shanghai");
         $this->rootPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR;
-    }
-
-    public function init()
-    {
-        //加载ENV文件
-        Env::setPath($this->getEnv())->loading();
-
-        //加载配置文件
-        Config::load();
-        //路由加载
-        Route::load();
-
-        //创建fd共享内存
-        FacadeTable::create('fd', [
-            ['fd', Table::TYPE_INT, 64],
-            ['workerId', Table::TYPE_INT, 64],
-            ['isBot', Table::TYPE_INT, 2]
-        ]);
+        //设置容器当前实例
+        $this->setInstance($this);
+        //把当当前实例添加到容器
+        $this->instance(static::class, $this);
+        $this->server = new Server;
     }
 
     public function start()
     {
-        $this->init();
+        (new Bootstrap($this))->start();
         try {
-            (new Server)->run();
+            $this->server->run();
         } catch (ReflectionException $th) {
             dump('反射失败：' . $th->getMessage());
         }
@@ -73,7 +54,7 @@ class App
         return $this->rootPath;
     }
 
-    public function getRootPath(string $value = ''): string
+    public function rootPath(string $value = ''): string
     {
         if (!empty($value)) {
             return $this->rootPath . $value;
@@ -101,8 +82,8 @@ class App
      * @Date: 2021-03-24 14:03:53
      * @return {*}
      */
-    public function getAppPath()
+    public function appPath()
     {
-        return $this->rootPath . 'app' . DIRECTORY_SEPARATOR;
+        return $this->rootPath('app' . DIRECTORY_SEPARATOR);
     }
 }

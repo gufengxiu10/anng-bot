@@ -14,15 +14,15 @@ class Message
 {
     public function run(Server $server, Frame $frame)
     {
-        Table::name('fd')->set($server->getWorkerId() . $frame->fd, [
-            'fd' => $frame->fd,
-            'workerId' => $server->getWorkerId()
-        ]);
+        // Table::name('fd')->set($server->getWorkerId() . $frame->fd, [
+        //     'fd' => $frame->fd,
+        //     'workerId' => $server->getWorkerId()
+        // ]);
 
-        if (class_exists(App::class)) {
-            Reflection::setDefaultMethod('run', ['server' => $server, 'frame' => $frame])->instance(App::class);
-        } else {
-            Reflection::setDefaultMethod('run', ['server' => $server, 'frame' => $frame])->instance('\\app\\event\\Message');
-        }
+        // if (class_exists(App::class)) {
+        //     Reflection::setDefaultMethod('run', ['server' => $server, 'frame' => $frame])->instance(App::class);
+        // } else {
+        //     Reflection::setDefaultMethod('run', ['server' => $server, 'frame' => $frame])->instance('\\app\\event\\Message');
+        // }
     }
 }

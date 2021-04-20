@@ -1,8 +1,8 @@
 <?php
 
-namespace app\module;
+namespace app;
 
-class Controller
+class BaseController
 {
     protected  function service(string $class = '')
     {

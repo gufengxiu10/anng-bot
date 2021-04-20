@@ -27,7 +27,7 @@ class Annotations
     public function load()
     {
         try {
-            $path = App::getRootPath('app/controller');
+            $path = App::rootPath('app/controller');
             $finder = new Finder;
             $finder->in($path);
             foreach ($finder->files()->name('*.php') as $value) {

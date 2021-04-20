@@ -5,14 +5,28 @@ declare(strict_types=1);
 
 namespace Anng\lib;
 
-use Anng\lib\facade\Reflection;
+use Throwable;
 
 class Exception
 {
-    private $ignoreReport = [];
+    private array $ignoreReport = [
+        RouteException::class
+    ];
 
-    public function load($class)
+
+    public function default(Throwable $th)
     {
-        $object = Reflection::instance($class);
+        return $th->getFile() . '|' . $th->getLine() . '|' . $th->getMessage();
+    }
+
+    public function render(Throwable $th)
+    {
+        foreach ($this->ignoreReport as $report) {
+            if ($th instanceof $report) {
+                return $th->getMessage();
+            }
+        }
+
+        return $this->default($th);
     }
 }
