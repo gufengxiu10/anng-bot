@@ -18,11 +18,11 @@ class Bootstrap
 
     public function start()
     {
-        $this->envLoad();
         $this->configLoad();
-        $this->providerRegister();
-        // $this->routeLoad();
-        // $this->providerLoad();
+        $this->envLoad();
+        // $this->providerRegister();
+        $this->routeLoad();
+        $this->providerLoad();
     }
 
     /**
@@ -38,7 +38,7 @@ class Bootstrap
             $provider =  include_once $path;
             foreach ($provider as $key => $val) {
                 if (class_exists($val)) {
-                    Container::instance($key, new $val());
+                    $this->app->instance($key, new $val());
                 }
             }
         }

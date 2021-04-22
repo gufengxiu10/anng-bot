@@ -2,6 +2,6 @@
 
 use Anng\lib\facade\App;
 
-require_once './../core/Base.php';
+$app = include_once './../core/Base.php';
 
-App::start();
+$app->start();

@@ -8,7 +8,7 @@ use Anng\lib\Collection;
 use Anng\lib\exception\ResponseException;
 use Anng\lib\facade\App;
 use Anng\lib\facade\Reflection;
-use ReflectionClass;
+use Anng\lib\reflection\ReflectionClass;
 
 class Dispatch
 {
@@ -34,23 +34,13 @@ class Dispatch
             throw new ResponseException('控制器不存在');
         }
 
-        $reflection = new ReflectionClass($controller);
-        $args = [];
+        $refltion = (new ReflectionClass($controller));
 
-        if ($construct = $reflection->getConstructor()) {
-            $args = Reflection::parseData($construct);
-        }
-
-        $controllerObject = $reflection->newInstanceArgs($args);
-        if (!$reflection->hasMethod($action)) {
+        if (!$refltion->getRefltion()->hasMethod($action)) {
             throw new ResponseException('方法不存在');
         }
 
-        $methodArgs = Reflection::parseData($reflection->getMethod($action), $route->getParam());
-        dump($methodArgs);
-        return 1;
-        $data = call_user_func_array([$controllerObject, $action], $methodArgs);
-
+        $data = $refltion->sendMethod($action, $route->getParam()) ?: '';
         if (is_array($data)) {
             $data = json_encode($data, JSON_UNESCAPED_UNICODE);
         } else if ($data instanceof Collection) {

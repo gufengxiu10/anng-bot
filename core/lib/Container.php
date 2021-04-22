@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Anng\lib;
 
+use Anng\lib\reflection\ReflectionClass;
 use Closure;
 use Exception;
 use Psr\Container\ContainerInterface;
-use ReflectionClass;
 use ReflectionFunctionAbstract;
 
 class Container implements ContainerInterface
@@ -26,6 +26,7 @@ class Container implements ContainerInterface
      * @var array
      */
     protected array $bind = [];
+
     public function __construct()
     {
         //设置容器当前实例
@@ -132,49 +133,9 @@ class Container implements ContainerInterface
      * @Date: 2021-01-26 15:27:03
      * @return {*}
      */
-    public function inovkeClass($class, $vars = [])
+    public function inovkeClass(string $class, $vars = [])
     {
-        $reflect = new Reflection();
-        $reflect = new ReflectionClass($class);
-
-        $constructor = $reflect->getConstructor();
-        $args = $constructor ? $this->bindParams($constructor, $vars) : [];
-        $object = $reflect->newInstanceArgs($args);
-        return $object;
-    }
-
-    private function bindParams(ReflectionFunctionAbstract $refl, array $args = []): array
-    {
-        $params = $refl->getParameters();
-        if (empty($params)) {
-            return [];
-        }
-
-        $data = [];
-        //重置数组指针
-        reset($args);
-        //用于判断数组键值是以自然数为键,如果是则按顺序赋值
-        $type = key($args) === 0 ? 1 : 0;
-        foreach ($params as $value) {
-            $paramName = $value->getName();
-            if (!is_null($value->getType())) {
-                $name = $value->getType()->getName();
-                //TODO::未处理匿名数据的回调
-                $data[] = $this->instance($name, $args, false);
-            } else {
-                if ($type == 1 && !empty($args)) {
-                    $data[] = array_shift($args);
-                } elseif ($type == 0 && isset($args[$paramName])) {
-                    $data[] = $args[$paramName];
-                } elseif ($value->isDefaultValueAvailable()) {
-                    $data[] = $value->getDefaultValue();
-                } else {
-                    throw new Exception('method param miss:' . $value->getName());
-                }
-            }
-        }
-
-        return $data;
+        return (new ReflectionClass($class))->setConstructParam($vars)->instance();
     }
 
     public function clear($name)

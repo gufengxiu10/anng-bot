@@ -23,7 +23,6 @@ $container = new App;
 
 $container->bind([
     'App'               => App::class,
-    'Facade'            => Facade::class,
     'Config'            => Config::class,
     'Redis'             => Redis::class,
     'Env'               => Env::class,
@@ -42,3 +41,5 @@ $container->bind([
 ]);
 
 require_once 'Helper.php';
+
+return $container;

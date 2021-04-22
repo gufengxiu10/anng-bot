@@ -95,7 +95,7 @@ class Route
         $this->group->setRule($rule, $route, 'put');
         return $this;
     }
-    
+
     public function delete($rule, $route = '')
     {
         $this->group->setRule($rule, $route, 'delete');

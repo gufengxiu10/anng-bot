@@ -6,16 +6,11 @@ use app\module\controller\admin\Pixiv;
 use app\module\controller\admin\article\Index as ArticleIndex;
 use app\module\controller\admin\article\Cate as ArticleCate;
 use app\controller\Test;
-
+use app\module\controller\admin\Other;
 
 Route::group('api', function () {
 
-    Route::get('bai', [Admin::class, 'list']);
-    Route::get('dui', [Admin::class, 'list']);
-
-    Route::get('download', [Test::class, 'download']);
-    Route::get('list', [Test::class, 'list']);
-
+    Route::get('bai', [Other::class, 'import']);
 
     Route::group('article', function () {
         Route::group('cate', function () {

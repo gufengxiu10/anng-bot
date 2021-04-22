@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Anng\lib;
 
+
 abstract class Facade
 {
     /**
@@ -22,7 +23,7 @@ abstract class Facade
             $class = $facadeClass;
         }
 
-        return Container::getInstance()->make($class, $args);
+        return App::getInstance()->make($class, $args);
     }
 
     abstract protected static function getFacadeClass();

@@ -9,3 +9,5 @@ test.*
 im.zip
 public/upload
 /runtime
+/public
+!/public/index.php

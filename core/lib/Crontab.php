@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Anng\lib;
 
 use Anng\lib\facade\Reflection;
+use Anng\lib\reflection\ReflectionClass;
 use \Exception;
 use Swoole\Http\Server;
 
@@ -84,10 +85,10 @@ class Crontab
             $method = $word['method'];
         }
 
-        Reflection::setDefaultMethod('run', ['server' => $this->server, 'config' => $word])
+        (new ReflectionClass($word['task']))->setDefaultMethod('run', ['server' => $this->server, 'config' => $word])
             ->setMethod('_make', ['server' => $this->server, 'config' => $word])
             ->setMethod($method ?: '', ['server' => $this->server, 'config' => $word])
-            ->instance($word['task']);
+            ->make();
     }
 
     /**

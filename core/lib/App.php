@@ -13,13 +13,15 @@ class App extends Container
 
     public function __construct()
     {
+        parent::__construct();
         date_default_timezone_set("Asia/Shanghai");
         $this->rootPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR;
-        //设置容器当前实例
-        $this->setInstance($this);
-        //把当当前实例添加到容器
-        $this->instance(static::class, $this);
         $this->server = new Server;
+    }
+
+    public function getServer()
+    {
+        return $this->server->server;
     }
 
     public function start()
@@ -28,7 +30,7 @@ class App extends Container
         try {
             $this->server->run();
         } catch (ReflectionException $th) {
-            dump('反射失败：' . $th->getMessage());
+            dump('反射失败：' . $th->getMessage() . '|' . $th->getLine() . '|' . $th->getFile());
         }
     }
 

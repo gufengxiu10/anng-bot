@@ -94,6 +94,10 @@ class Parse
                 } elseif (strtolower($value[1]) == 'like') {
                     $v = is_string($value[1]) ? "'" .  $value[2] . "'" : $value[1];
                     $sql .= "(`{$value[0]}` LIKE {$v}) AND ";
+                } elseif (strtolower($value[1]) == 'in') {
+                    // $v = is_string($value[1]) ? "'" .  $value[2] . "'" : $value[1];
+                    $inv = is_array($value[2]) ? implode(',', $value[2]) : $value[2];
+                    $sql .= "(`{$value[0]}` IN (" . $inv . ")) AND ";
                 }
             } elseif (!isset($value[2])) {
                 $v = is_string($value[1]) ? "'" .  $value[1] . "'" : $value[1];

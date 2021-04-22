@@ -195,6 +195,7 @@ class Sql
         }
 
         $list = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $list;
         return Collection::make($list);
     }
 

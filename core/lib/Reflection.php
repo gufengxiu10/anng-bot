@@ -5,59 +5,12 @@ declare(strict_types=1);
 namespace Anng\lib;
 
 use Exception;
-use ReflectionClass;
 use ReflectionMethod;
-use ReflectionNamedType;
 
-class Reflection
+abstract class Reflection
 {
-    private array $method = [];
-
-    private Container $container;
-
-    private array|null $defaultMethod = null;
-
-    /**
-     * @name: 实例化
-     * @param string $class 实例化的类名
-     * @param array $args 构造函数实例化相关参数
-     * @var $reflection 反射实例
-     * @var $argc 构造函数相关参数
-     * @author: ANNG
-     * @todo: 
-     * @Date: 2021-02-03 09:23:23
-     */
-    public function instance($class, $args = [], $callMethod = true): object
-    {
-        $reflection = new ReflectionClass($class);
-        $args = [];
-        if ($construct = $reflection->getConstructor()) {
-            $args = $this->parseData($construct, $args);
-        }
-
-        $object = $reflection->newInstanceArgs($args);
-
-
-        if ($callMethod === true) {
-            foreach ($this->method as $value) {
-                if ($reflection->hasMethod($value['method'])) {
-                    $args = $value['args'] ?? [];
-                    $methodArgs = $this->parseData($reflection->getMethod($value['method']), (array)$args);
-                    call_user_func_array([$object, $value['method']], $methodArgs);
-                }
-            }
-        }
-
-        if ($this->defaultMethod) {
-            if ($reflection->hasMethod($this->defaultMethod['method'])) {
-                $args = $this->defaultMethod['args'] ?? [];
-                $methodArgs = $this->parseData($reflection->getMethod($this->defaultMethod['method']), (array)$args);
-                call_user_func_array([$object, $this->defaultMethod['method']], $methodArgs);
-            }
-        }
-
-        return $object;
-    }
+    abstract public function instance();
+    abstract public function make();
 
     /**
      * @name: 参数解析
@@ -101,56 +54,5 @@ class Reflection
         }
 
         return $data;
-    }
-
-    /**
-     * @name: 实例化后自动调用的方法
-     * @param string|array $method 调用的方法
-     * @author: ANNG
-     * @todo: 
-     * @Date: 2021-02-03 10:44:29
-     */
-    public function setMethod(string|array $method, array $args = []): static
-    {
-        // if (!empty($this->method)) {
-        //     $this->method = [];
-        // }
-        if (empty($method)) {
-            return $this;
-        }
-
-        if (is_string($method)) {
-            $this->method[] = [
-                'method' => $method,
-                'args' => $args
-            ];
-        } else {
-            $this->method = $method;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @name: 设置默认的调用方法
-     * @param {*}
-     * @author: ANNG
-     * @todo: 
-     * @Date: 2021-02-03 10:53:22
-     * @return {*}
-     */
-    public function setDefaultMethod(string $method, array $args = []): static
-    {
-        $this->defaultMethod = [
-            'method' => $method,
-            'args' => $args
-        ];
-        return $this;
-    }
-
-    public function setContainer(Container $container): static
-    {
-        $this->container = $container;
-        return $this;
     }
 }
