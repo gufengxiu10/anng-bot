@@ -30,6 +30,7 @@ Route::group('api', function () {
 
 
     Route::group('pixiv', function () {
+        Route::get('/img', [Pixiv::class, 'getImg']);
         Route::get('/', [Pixiv::class, 'lists']);
     });
 });
