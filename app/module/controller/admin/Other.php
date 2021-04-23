@@ -19,15 +19,14 @@ class Other extends BaseController
 {
     public function import()
     {
-
-        App::getServer()->task([
-            'name'      => GoodsImport::class,
-            'param'     => [
-                'bai'   => 100,
-                'bak'   => 100
-            ],
-            'finish'    => true
-        ]);
+        // App::getServer()->task([
+        //     'name'      => GoodsImport::class,
+        //     'param'     => [
+        //         'bai'   => 100,
+        //         'bak'   => 100
+        //     ],
+        //     'finish'    => true
+        // ]);
         return '完成';
         // $ik = App::getServer()->task(10);
         // dump($ik);
