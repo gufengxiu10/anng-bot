@@ -34,12 +34,12 @@ class Coroutine
         $this->flags = $this->task->flags;
         $this->dispatchTime = $this->task->dispatch_time;
         $this->data = Collection::make($this->task->data);
-        $this->param = $this->data->param;
-        if (!is_null($this->data->name)) {
+        $this->param = $this->data->param ?? [];
+        if ($this->data->has('name')) {
             $this->controller = $this->data->name;
         }
 
-        if (!is_null($this->data->action)) {
+        if ($this->data->has('action')) {
             $this->action = $this->data->action;
         }
     }
@@ -49,7 +49,6 @@ class Coroutine
     {
         return class_exists($this->controller);
     }
-
 
     public function __get($name)
     {

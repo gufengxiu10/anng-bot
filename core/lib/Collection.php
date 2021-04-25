@@ -49,6 +49,10 @@ class Collection implements ArrayAccess
         unset($this->items[$offset]);
     }
 
+    public function has($name)
+    {
+        return !empty($this->items[$name] ?? $this->items[$name] ?: '') ? true : false;
+    }
 
     public function __get($name)
     {

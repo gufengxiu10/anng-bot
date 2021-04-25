@@ -13,15 +13,15 @@ class GoodsImport
 {
     public function run()
     {
-        $startId = 324;
+        $startId = 439;
         $list = Db::name('goods')
             ->where('brand_id', 'in', [165, 3519])
-            // ->limit(10)
-            ->select();
+            ->select()
+            ->toArray();
 
         $sql = '';
         $copy = [];
-        $name = 'zztcsm_cn';
+        $name = 'zzlbsm_cn';
         $wg = new WaitGroup;
         $wg->add(count($list));
         foreach ($list as $key => $info) {
@@ -79,7 +79,7 @@ class GoodsImport
 
 
                 go(function () use ($info, &$copy, $wg, &$sql, $name, $infoArr) {
-                    $imagesAll = Db::name('goods_images')->where('goods_id', $info['goods_id'])->select();
+                    $imagesAll = Db::name('goods_images')->where('goods_id', $info['goods_id'])->select()->toArray();
                     foreach ($imagesAll as $value) {
 
                         $imageOldPathFile = App::rootPath(str_replace('/Public/upload', 'public/execl', $value['image_url']));

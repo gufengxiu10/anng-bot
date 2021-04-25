@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Anng\lib\db;
 
 use Anng\lib\db\biluder\sql\Insert;
+use Anng\lib\db\biluder\sql\Select;
 use Anng\lib\db\biluder\sql\Update;
 
 abstract class Biluder
@@ -17,6 +18,7 @@ abstract class Biluder
 
     use Insert;
     use Update;
+    use Select;
 
     protected array $option = [];
 

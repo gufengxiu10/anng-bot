@@ -11,6 +11,7 @@ use Anng\lib\db\biluder\sql\Conditions;
 use Anng\lib\exception\DbException;
 use PDO;
 use Swoole\Database\PDOProxy;
+use Swoole\Database\PDOStatementProxy;
 
 class Sql
 {
@@ -82,20 +83,11 @@ class Sql
     {
         $this->parse->data = $data;
         $sql = $this->biluder->insert();
-
         $pk = $this->connection->getPk();
         if ($this->isSql === true) {
             return $sql;
         }
-        $statement = $this->connection->prepare($sql);
-        if (!$statement) {
-            throw new \Exception('Prepare failed');
-        }
-        $result = $statement->execute();
-        if (!$result) {
-            throw new \Exception('Execute failed');
-        }
-
+        $this->sendSql($sql);
         $id = $this->connection->lastInsertId();
         return Collection::make(array_merge($data, [$pk => $id]));
     }
@@ -112,15 +104,7 @@ class Sql
     {
         $this->parse->data = $data;
         $sql = $this->biluder->insert();
-        $statement = $this->connection->prepare($sql);
-        if (!$statement) {
-            throw new \Exception('Prepare failed');
-        }
-        $result = $statement->execute();
-        if (!$result) {
-            throw new \Exception('Execute failed');
-        }
-
+        $this->sendSql($sql);
         $id = $this->connection->lastInsertId();
         return $id;
     }
@@ -194,11 +178,33 @@ class Sql
             throw new \Exception('Execute failed');
         }
 
+
         $list = $statement->fetchAll(PDO::FETCH_ASSOC);
-        return $list;
         return Collection::make($list);
     }
 
+    public function count()
+    {
+        $sql = $this->biluder->count();
+        if ($this->isSql === true) return $sql;
+        $statement = $this->sendSql($sql);
+        $list = $statement->fetch(PDO::FETCH_ASSOC);
+        return array_shift($list);
+    }
+
+    private function sendSql($sql): PDOStatementProxy
+    {
+        $statement = $this->connection->prepare($sql);
+        if (!$statement) {
+            throw new \Exception('Prepare failed');
+        }
+        $result = $statement->execute();
+        if (!$result) {
+            throw new \Exception('Execute failed');
+        }
+
+        return $statement;
+    }
 
     public function getSql(bool $bool = false): static
     {
