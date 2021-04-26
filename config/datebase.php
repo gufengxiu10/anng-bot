@@ -8,6 +8,6 @@ return [
     'db_char'       => 'utf8mb4',
     'db_username'   => 'gufengxiu10',
     'db_password'   => 'Freedomx102',
-    // 'db_prefix'     => 'pixiv_'
-    'db_prefix'     => 'tp_'
+    'db_prefix'     => 'pixiv_'
+    // 'db_prefix'     => 'tp_'
 ];

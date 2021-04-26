@@ -169,6 +169,7 @@ class Sql
         if ($this->isSql === true) {
             return $sql;
         }
+
         $statement = $this->connection->prepare($sql);
         if (!$statement) {
             throw new \Exception('Prepare failed');
@@ -177,7 +178,6 @@ class Sql
         if (!$result) {
             throw new \Exception('Execute failed');
         }
-
 
         $list = $statement->fetchAll(PDO::FETCH_ASSOC);
         return Collection::make($list);

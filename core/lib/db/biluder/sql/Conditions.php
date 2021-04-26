@@ -59,8 +59,12 @@ trait Conditions
      * @Date: 2021-02-02 16:10:22
      * @return {*}
      */
-    public function where($field, $condition, $value = null)
+    public function where(string|callable $field, $condition = null, $value = null)
     {
+        if (is_callable($field)) {
+            $field($this);
+            return $this;
+        }
         $where = [$field, $condition, $value];
         array_push($this->parse->where, $where);
         return $this;

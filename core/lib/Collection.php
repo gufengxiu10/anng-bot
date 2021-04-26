@@ -25,6 +25,55 @@ class Collection implements ArrayAccess
         return $this->items;
     }
 
+    public function each(callable $done)
+    {
+        foreach ($this->items as $key => &$item) {
+            $oitem = static::make($item);
+            $done($oitem, $key);
+            $item = $oitem->toArray();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @name: 判断字段是否存在 
+     * @param {*} $name
+     * @author: ANNG
+     * @return {*}
+     */
+    public function has($name)
+    {
+        return  isset($this->items[$name]) ?? false;;
+    }
+
+
+    public function push(string $name, $value, $empty = false): static
+    {
+
+        if ($empty === true && empty($value)) {
+            return $this;
+        }
+
+        if (!$this->has($name)) {
+            $this->items[$name] = [];
+        }
+
+        array_push($this->items[$name], $value);
+        return $this;
+    }
+
+    public function add(string $name, $value, $empty = false)
+    {
+        if ($empty === true && empty($value)) {
+            return $this;
+        }
+
+        $this->items[$name] = $value;
+        return $this;
+    }
+
+
     public function offsetExists($offset)
     {
         return isset($this->items[$offset]);
@@ -49,14 +98,16 @@ class Collection implements ArrayAccess
         unset($this->items[$offset]);
     }
 
-    public function has($name)
-    {
-        return !empty($this->items[$name] ?? $this->items[$name] ?: '') ? true : false;
-    }
+
 
     public function __get($name)
     {
         return $this->items[$name];
+    }
+
+    public function __set($name, $value)
+    {
+        $this->items[$name] = $value;
     }
 
     /**
