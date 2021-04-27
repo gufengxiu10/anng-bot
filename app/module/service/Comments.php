@@ -8,6 +8,19 @@ use Exception;
 
 class Comments extends Service
 {
+    public function info(int $id)
+    {
+        $info = Db::name('comments')
+            ->where('id', $id)
+            ->find();
+
+        if (!$info) {
+            throw new Exception('评论不存在');
+        }
+
+        return $info;
+    }
+
     /**
      * @name: 全部评论
      * @param {*}
@@ -56,9 +69,24 @@ class Comments extends Service
      */
     public function insert($data)
     {
-        if (!(!empty($data['pid']) && Db::name('comments')->where('id', $data['pid'])->count() > 0)) {
+        if (!empty($data['pid']) && Db::name('comments')->where('id', $data['pid'])->count() <= 0) {
             throw new Exception('数据不存在');
         }
         return Db::name('comments')->insert($data);
+    }
+
+    /**
+     * @name: 评论删除
+     * @param {int} $id
+     * @author: ANNG
+     * @return {*}
+     */
+    public function del(int $id): void
+    {
+        $info = $this->info($id);
+        if (Db::name('comments')->where('pid', $info->id)->count() > 0) {
+            throw new Exception('有子评论不能进行删除');
+        }
+        Db::name('comments')->where('id', $info->id)->delete();
     }
 }

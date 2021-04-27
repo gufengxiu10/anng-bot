@@ -1,6 +1,7 @@
 <?php
 
 use Anng\lib\facade\Route;
+use app\module\controller\admin\Admin;
 use app\module\controller\admin\Pixiv;
 use app\module\controller\admin\article\Index as ArticleIndex;
 use app\module\controller\admin\article\Cate as ArticleCate;
@@ -9,8 +10,12 @@ use app\module\controller\admin\Other;
 
 Route::group('api', function () {
 
-    Route::get('bai', [Other::class, 'import']);
-    Route::get('bai2', [Pixiv::class, 'download']);
+    // Route::get('bai', [Other::class, 'import']);
+    // Route::get('bai2', [Pixiv::class, 'download']);
+
+    Route::group('admin', function () {
+        Route::post('add', [Admin::class, 'test']);
+    });
 
     Route::group('article', function () {
         Route::group('cate', function () {

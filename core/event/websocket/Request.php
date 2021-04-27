@@ -23,13 +23,14 @@ class Request extends EventRequest
     public function run(HttpRequest $request, Response $response)
     {
         parent::run($request, $response);
+        FacadeRequest::send($request);
+        FacadeResponse::send($response);
         try {
-            FacadeRequest::send($request);
-            FacadeResponse::send($response)
-                ->end(FacadeRoute::send(App::get('request')))->clear();
-            FacadeRequest::clear();
+            FacadeResponse::end(FacadeRoute::send(App::get('request')))->clear();
         } catch (Throwable $th) {
             FacadeResponse::end(Exeception::render($th));
         }
+
+        FacadeRequest::clear();
     }
 }

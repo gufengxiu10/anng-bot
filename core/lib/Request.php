@@ -4,22 +4,54 @@ declare(strict_types=1);
 
 namespace Anng\lib;
 
+use Anng\lib\file\UploadFile;
 use Swoole\Http\Request as HttpRequest;
 
 class Request
 {
     private $request = null;
     private $param = [];
+    private array $header = [];
+    private array|null $files = [];
+
+    public static function make()
+    {
+        # code...
+    }
 
     public function send(HttpRequest $request)
     {
         $this->request = $request;
+        $this->header = $this->request->header;
+        $this->files = $this->request->files;
         $this->setParam();
+    }
+
+
+    public function has($name, $type = 'param', $isEmpty = false)
+    {
+        $data = '';
+        switch ($type) {
+            case 'param':
+                $data = $this->param[$name] ??  null;
+                break;
+            case 'header':
+                $data = $this->header[$name] ??  null;
+                break;
+            default:
+                $data = $this->param[$name] ??  null;
+        }
+
+        if ($isEmpty === true && empty($data)) {
+            return false;
+        }
+
+        return !is_null($data) ? true : false;
     }
 
     public function setParam(): void
     {
-        if ($this->request->header['content-type'] == 'application/json') {
+        if (isset($this->header['content-type']) && $this->header['content-type'] == 'application/json') {
             $this->param = json_decode($this->request->getContent(), true);
         } else {
             if ($this->method() != 'get') {
@@ -51,6 +83,25 @@ class Request
             return $this->param[$name] ?? $defalut;
         }
         return $this->param;
+    }
+
+    public function file($name = '')
+    {
+        if (empty($name)) {
+            $name = 'file';
+        }
+
+        if (isset($this->files[$name])) {
+            $file = $this->files[$name];
+            return UploadFile::make($file['tmp_name'], $file['name'], $file['error']);
+        }
+
+        return false;
+    }
+
+    public function files()
+    {
+        # code...
     }
 
     /**

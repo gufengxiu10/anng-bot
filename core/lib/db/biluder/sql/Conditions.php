@@ -65,6 +65,11 @@ trait Conditions
             $field($this);
             return $this;
         }
+
+        if (empty($field)) {
+            return $this;
+        }
+
         $where = [$field, $condition, $value];
         array_push($this->parse->where, $where);
         return $this;

@@ -36,6 +36,11 @@ class Collection implements ArrayAccess
         return $this;
     }
 
+    public function isEmpty()
+    {
+        return empty($this->items);
+    }
+
     /**
      * @name: 判断字段是否存在 
      * @param {*} $name

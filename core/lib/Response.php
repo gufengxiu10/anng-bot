@@ -16,8 +16,11 @@ class Response
         return $this;
     }
 
-    public function end($data)
+    public function end(callable|string $data)
     {
+        if (is_callable($data)) {
+            $data = $data();
+        }
         $this->response->end($data);
         return $this;
     }

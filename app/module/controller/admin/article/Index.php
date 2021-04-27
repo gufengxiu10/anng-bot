@@ -15,9 +15,8 @@ class Index extends BaseController
      * @author: ANNG
      * @return {*}
      */
-    public function lists(ArticleRequest $request, ArticleRequest $request2)
+    public function lists()
     {
-        dump($request);
         return $this->service(ArticleIndex::class)
             ->lists(Request::param('page', 1), Request::param('limit', 10));
     }
