@@ -48,6 +48,15 @@ class Admin extends Service
         }
     }
 
+    public function checkId(int $id)
+    {
+        $info = Db::name('admin')
+            ->where('id', $id)
+            ->count();
+
+        return $info > 0 ? true : false;
+    }
+
     /**
      * @name: 添加管理员
      * @param {*}
@@ -67,5 +76,20 @@ class Admin extends Service
         ]);
 
         return $info ? true : false;
+    }
+
+    /**
+     * @name: 删除管理员
+     * @param {*}
+     * @author: ANNG
+     * @return {*}
+     */
+    public function del(int $id): void
+    {
+        if (!$this->checkId($id)) {
+            throw new Exception('管理员不存在');
+        }
+
+        Db::name('admin')->where('id', $id)->delete();
     }
 }

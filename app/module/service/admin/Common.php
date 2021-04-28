@@ -18,4 +18,15 @@ class Common extends Service
     {
         return password_hash($password, PASSWORD_DEFAULT);
     }
+
+    /**
+     * @name: 
+     * @param {*}
+     * @author: ANNG
+     * @return {*}
+     */
+    public function check($password, $hash)
+    {
+        return password_verify($password, $hash);
+    }
 }

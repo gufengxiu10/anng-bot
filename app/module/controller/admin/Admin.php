@@ -7,6 +7,7 @@ namespace app\module\controller\admin;
 use Anng\lib\facade\Request;
 use app\BaseController;
 use app\module\service\admin\Admin as AdminAdmin;
+use app\module\service\admin\Login;
 
 class Admin extends BaseController
 {
@@ -19,7 +20,7 @@ class Admin extends BaseController
         if (!Request::has('password', true)) {
             throw new \Exception('password参数必须有');
         }
-        $this->service(AdminAdmin::class)->add([
+        $this->service(Login::class)->login([
             'name'  => Request::param('name'),
             'password'  => Request::param('password')
         ]);

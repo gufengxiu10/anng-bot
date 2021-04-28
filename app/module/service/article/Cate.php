@@ -6,6 +6,12 @@ use Anng\lib\facade\Db;
 
 class Cate
 {
+    /**
+     * @name: 
+     * @param {*}
+     * @author: ANNG
+     * @return {*}
+     */
     public function lists()
     {
         return Db::name('article_cate')->select();
