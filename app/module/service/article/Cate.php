@@ -34,8 +34,8 @@ class Cate
         return $info;
     }
 
-    public function del()
+    public function del(int $id)
     {
-        # code...
+        Db::name('article_cate')->where('id', $id)->delete();
     }
 }

@@ -10,7 +10,7 @@ use app\module\controller\admin\Other;
 
 Route::group('api', function () {
 
-    // Route::get('bai', [Other::class, 'import']);
+    Route::get('bai', [Other::class, 'import']);
     // Route::get('bai2', [Pixiv::class, 'download']);
 
     Route::group('admin', function () {

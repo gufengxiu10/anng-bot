@@ -14,7 +14,6 @@ class Auth
 
     public function __construct(string $id, string $secret)
     {
-
         $this->id = $id;
         $this->secret = $secret;
     }

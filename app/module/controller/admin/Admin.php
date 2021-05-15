@@ -20,8 +20,9 @@ class Admin extends BaseController
         if (!Request::has('password', true)) {
             throw new \Exception('password参数必须有');
         }
-        $this->service(Login::class)->login([
-            'name'  => Request::param('name'),
+
+        return $this->service(Login::class)->login([
+            'name'      => Request::param('name'),
             'password'  => Request::param('password')
         ]);
     }

@@ -6,6 +6,7 @@ namespace app\module\service\admin;
 
 use Anng\lib\facade\Db;
 use Anng\lib\facade\Env;
+use Anng\lib\facade\Redis;
 use Anng\lib\Service;
 use Exception;
 use Firebase\JWT\JWT;
@@ -34,15 +35,31 @@ class Login extends Service
             throw new Exception('密码错误');
         }
 
-        $payload = array(
-            "iss" => "admin",
-            "aud" => "http://example.com",
-            "iat" => 1356999524,
-            "nbf" => 1357000000
-        );
+        $payload = [
+            //JWT签发者
+            "iss"   => "admin",
+            //签发时间
+            "aud"   => time(),
+            //过期时间
+            "iat"   => time() + 7200,
+            //该时间之前不接收处理该Token
+            "nbf"   => time() + 7200,
+            //面向的用户
+            "sub" => $info->id,
+            //该token唯一标识
+            "jti"   => '',
+            "ip"    => '127.0.0.1',
+            "token" => md5(uniqid('admin') . $info->id)
+        ];
+
+        Redis::set('admin:token:' . $payload['token']);
 
         $token = JWT::encode($payload, Env::get('key'));
-        dump(Env::get('key'));
-        dump($token);
+        return $token;
+    }
+
+    public function exit()
+    {
+        # code...
     }
 }
