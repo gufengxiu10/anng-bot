@@ -25,6 +25,7 @@ class Request
         $this->header = $this->request->header;
         $this->files = $this->request->files;
         $this->setParam();
+        return $this;
     }
 
 
@@ -51,7 +52,7 @@ class Request
 
     public function setParam(): void
     {
-        if (isset($this->header['content-type']) && $this->header['content-type'] == 'application/json') {
+        if (isset($this->header['content-type']) && str_contains($this->header['content-type'], 'application/json')) {
             $this->param = json_decode($this->request->getContent(), true);
         } else {
             if ($this->method() != 'get') {

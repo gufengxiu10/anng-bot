@@ -64,7 +64,6 @@ class Parse
 
     public function set()
     {
-        // dump($this->set);
         $sql = [];
         foreach ($this->set as $k => $v) {
             $sql[] = "`{$k}` = " . (is_int($v) ? $v : "'{$v}'");

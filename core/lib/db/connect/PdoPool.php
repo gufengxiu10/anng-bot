@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Anng\lib\db\connect;
 
 use Anng\lib\Db;
+use PDO;
 use Swoole\Database\PDOConfig;
 use Swoole\Database\PDOPool as SwoolePdoPool;
 
@@ -29,6 +30,10 @@ class PdoPool
                 ->withCharset($this->db->config->get('char'))
                 ->withUsername($this->db->config->get('username'))
                 ->withPassword($this->db->config->get('password'))
+                ->withOptions([
+                    PDO::ATTR_STRINGIFY_FETCHES => false,
+                    PDO::ATTR_EMULATE_PREPARES => false
+                ])
         );
 
         return $this;

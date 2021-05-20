@@ -9,6 +9,7 @@ use Closure;
 use Exception;
 use Psr\Container\ContainerInterface;
 use ReflectionFunctionAbstract;
+use Swoole\Coroutine;
 
 class Container implements ContainerInterface
 {
@@ -160,6 +161,9 @@ class Container implements ContainerInterface
 
         return static::$instance;
     }
+
+
+    
 
     public function get($name)
     {

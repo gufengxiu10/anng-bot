@@ -12,6 +12,7 @@ use Anng\lib\Db;
 use Anng\lib\Table;
 use Anng\lib\Annotations;
 use Anng\lib\cache\Cache;
+use Anng\lib\container\Request as ContainerRequest;
 use Anng\lib\Exception;
 use Anng\lib\Messages;
 use Anng\lib\Route;
@@ -37,7 +38,8 @@ $container->bind([
     'Messages'          => Messages::class,
     'Route'             => Route::class,
     'Cache'             => Cache::class,
-    'Exception'         => Exception::class
+    'Exception'         => Exception::class,
+    'RequestContainer'  => ContainerRequest::class
 ]);
 
 require_once 'Helper.php';

@@ -2,6 +2,7 @@
 
 namespace app;
 
+
 class BaseController
 {
     protected  function service(string $class = '')

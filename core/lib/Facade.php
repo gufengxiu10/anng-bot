@@ -15,7 +15,7 @@ abstract class Facade
      * @Date: 2021-02-03 11:56:17
      * @return {*}
      */
-    protected static function getInstance(string $class = '', array $args = [])
+    public static function getInstance(string $class = '', array $args = [])
     {
         $class = $class ?: static::class;
         $facadeClass = static::getFacadeClass();

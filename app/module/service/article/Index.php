@@ -9,9 +9,11 @@ class Index
 {
     public function lists($page, $limit)
     {
-        return Db::name('article')
+        $data = Db::name('article')
             ->limit($page, $limit)
             ->select();
+        
+        return $data;
     }
 
     public function info($id)

@@ -4,6 +4,7 @@ namespace Anng\lib;
 
 use Anng\lib\app\Bootstrap;
 use Anng\lib\app\Server;
+use Anng\lib\container\Request;
 use ReflectionException;
 
 class App extends Container

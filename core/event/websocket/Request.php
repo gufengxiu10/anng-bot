@@ -3,11 +3,11 @@
 namespace Anng\event\websocket;
 
 use Anng\event\Request as EventRequest;
-use Anng\lib\facade\App;
 use Anng\lib\facade\Exeception;
-use Anng\lib\facade\Request as FacadeRequest;
-use Anng\lib\facade\Response as FacadeResponse;
+use Anng\lib\facade\RequestContainer;
 use Anng\lib\facade\Route as FacadeRoute;
+use Anng\lib\Request as LibRequest;
+use Anng\lib\Response as LibResponse;
 use Swoole\Http\Request as HttpRequest;
 use Swoole\Http\Response;
 use Throwable;
@@ -23,14 +23,13 @@ class Request extends EventRequest
     public function run(HttpRequest $request, Response $response)
     {
         parent::run($request, $response);
-        FacadeRequest::send($request);
-        FacadeResponse::send($response);
+        RequestContainer::set('request', (new LibRequest)->send($request));
+        RequestContainer::set('response', (new LibResponse())->send($response));
         try {
-            FacadeResponse::end(FacadeRoute::send(App::get('request')))->clear();
+            RequestContainer::get('response')->end(FacadeRoute::send(RequestContainer::get('request')));
         } catch (Throwable $th) {
-            FacadeResponse::end(Exeception::render($th));
+            RequestContainer::get('response')->end(Exeception::render($th));
         }
-
-        FacadeRequest::clear();
+        RequestContainer::clear();
     }
 }
