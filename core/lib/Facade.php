@@ -19,6 +19,10 @@ abstract class Facade
     {
         $class = $class ?: static::class;
         $facadeClass = static::getFacadeClass();
+        if (is_object($facadeClass)) {
+            return $facadeClass;
+        }
+
         if ($facadeClass) {
             $class = $facadeClass;
         }

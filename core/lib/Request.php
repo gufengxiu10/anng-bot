@@ -14,12 +14,7 @@ class Request
     private array $header = [];
     private array|null $files = [];
 
-    public static function make()
-    {
-        # code...
-    }
-
-    public function send(HttpRequest $request)
+    public function __construct(HttpRequest $request)
     {
         $this->request = $request;
         $this->header = $this->request->header;
@@ -61,6 +56,7 @@ class Request
                 $this->param = $this->request->get;
             }
         }
+        dump($this->param());
     }
 
     public function uri()

@@ -23,7 +23,7 @@ class Request extends EventRequest
     public function run(HttpRequest $request, Response $response)
     {
         parent::run($request, $response);
-        RequestContainer::set('request', (new LibRequest)->send($request));
+        RequestContainer::set('request', (new LibRequest($request)));
         RequestContainer::set('response', (new LibResponse())->send($response));
         try {
             RequestContainer::get('response')->end(FacadeRoute::send(RequestContainer::get('request')));
