@@ -4,32 +4,29 @@ declare(strict_types=1);
 
 namespace Anng\lib;
 
+use Anng\lib\contract\response\Response as ResponseResponse;
+use Anng\lib\facade\Exeception;
 use Swoole\Http\Response as SwResponse;
+use Throwable;
 
-class Response
+abstract class Response implements ResponseResponse
 {
-    private $response;
+    private string $data;
 
-    public function send(SwResponse $response)
+    public function __construct(protected SwResponse $response)
     {
-        $this->response = $response;
-        return $this;
+        # code...
     }
 
-    public function end(callable|string $data)
+    public function header()
     {
-        if (is_callable($data)) {
-            $data = $data();
-        }
-        $this->response->end($data);
-        return $this;
+        # code...
     }
 
-    public function clear()
-    {
-        $this->response = null;
-        return $this;
-    }
+
+    
+
+    abstract public function end();
 
     public function __call($method, $args = [])
     {

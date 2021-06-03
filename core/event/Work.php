@@ -31,7 +31,6 @@ class Work
         if ($server->getWorkerId() == 0) {
             Crontab::setTask(Config::get('crontab'))->run($server);
             Timer::tick(1000, function () {
-                // dump(Table::name('fd')->count());
             });
         }
     }

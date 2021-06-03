@@ -2,13 +2,18 @@
 
 namespace app\module\controller\admin\article;
 
-use Anng\lib\facade\Container;
 use Anng\lib\facade\Request;
 use app\BaseController;
-use app\module\service\article\Cate as ArticleCate;
+use app\module\service\article\Tag as ArticleTag;
 
-class Cate extends BaseController
+class Tag extends BaseController
 {
+
+    public function __construct()
+    {
+        $this->service = ArticleTag::class;
+    }
+
     /**
      * @name: 分类列表
      * @param {*}
@@ -17,7 +22,7 @@ class Cate extends BaseController
      */
     public function lists()
     {
-        return $this->success($this->service(ArticleCate::class)->lists());
+        return $this->success($this->service()->lists());
     }
 
     /**
@@ -28,23 +33,11 @@ class Cate extends BaseController
      */
     public function add()
     {
-        return $this->service(ArticleCate::class)->create([
+        return $this->service()->create([
             'name' => Request::param('name'),
         ]);
     }
 
-    /**
-     * @name: 分类更新
-     * @param {*} $id
-     * @author: ANNG
-     * @return {*}
-     */
-    public function update($id)
-    {
-        return $this->service(ArticleCate::class)->update($id, [
-            'name' => Request::param('name'),
-        ]);
-    }
 
     /**
      * @name: 分类删除

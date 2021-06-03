@@ -56,7 +56,6 @@ class Request
                 $this->param = $this->request->get;
             }
         }
-        dump($this->param());
     }
 
     public function uri()

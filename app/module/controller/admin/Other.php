@@ -23,7 +23,6 @@ class Other extends BaseController
         // ]);
         // return '完成';
         // $ik = App::getServer()->task(10);
-        // dump($ik);
         // return;
         // 'brand_id', [165, 3519]
     }

@@ -61,7 +61,6 @@ class Objects
                 $res = $this->auth->client()->putObject($this->auth->getBucket(), $file['name'], file_get_contents($file['path']));
                 return $res['oss-request-url'];
             } catch (OssException $e) {
-                dump($e->getMessage());
                 array_push($this->errorFile, $file);
                 return false;
             }

@@ -54,7 +54,6 @@ class Objects implements ObjectsInterface
                             'oss_date'  => $info['oss-requestheaders']['Date'],
                         ]));
                     } catch (OssException $th) {
-                        dump($th);
                     }
                 }
             });

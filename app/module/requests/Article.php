@@ -10,6 +10,5 @@ class Article extends From
 {
     public function rules()
     {
-        dump(1);
     }
 }

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Anng\lib\facade;
 
 use Anng\lib\Facade;
+use Anng\lib\response\Json;
 
-class Response extends Facade
+class ResponseJson extends Facade
 {
     protected static function getFacadeClass()
     {
-        return RequestContainer::get('response');
+        $response = RequestContainer::get('response');
+        return new Json($response);
     }
 }

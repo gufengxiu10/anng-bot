@@ -4,8 +4,9 @@ namespace app\module\service\article;
 
 use Anng\lib\facade\Db;
 
-class Label
+class Tag
 {
+
     /**
      * @name: 标签列表
      * @param {*}
@@ -14,7 +15,7 @@ class Label
      */
     public function lists()
     {
-        return Db::name('article_cate')->select();
+        return Db::name('article_label')->select();
     }
 
     /**
@@ -23,9 +24,12 @@ class Label
      * @author: ANNG
      * @return {*}
      */
-    public function add(array $data): mixed
+    public function create(array $data): mixed
     {
-        return Db::name('article_label')->insert($data);
+        return Db::name('article_label')->insert(array_merge([
+            'create_time'   => time(),
+            'update_time'   => time(),
+        ], $data));
     }
 
     /**

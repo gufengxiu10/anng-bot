@@ -10,6 +10,5 @@ class Request
     public function run(Server $server, $frame)
     {
         // Messages::search();
-        dump($frame);
     }
 }

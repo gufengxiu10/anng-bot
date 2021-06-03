@@ -9,6 +9,5 @@ class Connect
 {
     public function run(\Swoole\Server $server, $fd, $reactorId)
     {
-        // dump('连接成功');
     }
 }

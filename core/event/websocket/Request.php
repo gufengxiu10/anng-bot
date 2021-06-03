@@ -5,6 +5,7 @@ namespace Anng\event\websocket;
 use Anng\event\Request as EventRequest;
 use Anng\lib\facade\Exeception;
 use Anng\lib\facade\RequestContainer;
+use Anng\lib\facade\ResponseJson;
 use Anng\lib\facade\Route as FacadeRoute;
 use Anng\lib\Request as LibRequest;
 use Anng\lib\Response as LibResponse;
@@ -24,11 +25,11 @@ class Request extends EventRequest
     {
         parent::run($request, $response);
         RequestContainer::set('request', (new LibRequest($request)));
-        RequestContainer::set('response', (new LibResponse())->send($response));
+        RequestContainer::set('response', $response);
         try {
-            RequestContainer::get('response')->end(FacadeRoute::send(RequestContainer::get('request')));
+            FacadeRoute::send(RequestContainer::get('request'));
         } catch (Throwable $th) {
-            RequestContainer::get('response')->end(Exeception::render($th));
+            ResponseJson::sendData($th)->end(Exeception::render($th));
         }
         RequestContainer::clear();
     }

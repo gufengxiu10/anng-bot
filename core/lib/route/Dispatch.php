@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Anng\lib\route;
 
 use Anng\lib\Collection;
+use Anng\lib\contract\response\Response;
 use Anng\lib\exception\ResponseException;
 use Anng\lib\facade\App;
 use Anng\lib\facade\Reflection;
+use Anng\lib\facade\ResponseJson;
 use Anng\lib\reflection\ReflectionClass;
 
 class Dispatch
@@ -41,13 +43,11 @@ class Dispatch
         }
 
         $data = $refltion->sendMethod($action, $route->getParam()) ?: '';
-        if (is_array($data)) {
-            $data = json_encode($data, JSON_UNESCAPED_UNICODE);
-        } else if ($data instanceof Collection) {
-            $data = json_encode($data->toArray(), JSON_UNESCAPED_UNICODE);
+        if ($data instanceof Response) {
+            $data->end();
+        } else {
+            ResponseJson::sendData($data)->end();
         }
-
-        return $data;
     }
 
     public function perrlt()
