@@ -54,6 +54,8 @@ class Sql
             $this->where($pk, $data[$pk]);
             unset($data[$this->connection->getPk()]);
         }
+        $tableField = $this->connection->getField($this->parse->table());
+        $data = array_intersect_key($data, $tableField);
         $this->parse->set = $data;
         $sql = $this->biluder->update();
         if ($this->isSql === true) {

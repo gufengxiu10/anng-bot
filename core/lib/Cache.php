@@ -22,8 +22,11 @@ abstract class Cache implements CacheInterface
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *   如果给定的key不是一个合法的字符串时，抛出该异常
      */
-    public function get($key, $default = null)
+    public function get($key, $default = null,  $namespace = '')
     {
+        if ($namespace != '') {
+            $key = $namespace . "_" . $key;
+        }
         $data = $this->client->fetch($key);
         return $data ?: $default ?: $data;
     }
@@ -38,8 +41,11 @@ abstract class Cache implements CacheInterface
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *  如果给定的key不是一个合法的字符串时，抛出该异常。
      */
-    public function set($key, $val, $ttl = null)
+    public function set($key, $val, $ttl = null, $namespace = '')
     {
+        if ($namespace != '') {
+            $key = $namespace . "_" . $key;
+        }
         return $this->client->save($key, $val, $ttl);
     }
 
@@ -113,8 +119,11 @@ abstract class Cache implements CacheInterface
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *    如果给定的key不是一个合法的字符串时，抛出该异常.
      */
-    public function has($key)
+    public function has($key, $namespace = '')
     {
+        if ($namespace != '') {
+            $key = $namespace . "_" . $key;
+        }
         return $this->client->contains($key);
     }
 }

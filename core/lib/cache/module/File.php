@@ -10,6 +10,7 @@ use Doctrine\Common\Cache\FilesystemCache;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
+//https://www.doctrine-project.org/projects/doctrine-cache/en/1.10/index.html
 class File extends LibCache
 {
     public function create()

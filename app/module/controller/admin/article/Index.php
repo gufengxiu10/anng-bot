@@ -64,7 +64,7 @@ class Index extends BaseController
      */
     public function update($id)
     {
-        return $this->service(ArticleIndex::class)->update($id, [
+        $this->service(ArticleIndex::class)->update($id, [
             'title'         => Request::param('title'),
             'subtitle'      => Request::param('subtitle'),
             'cat_id'        => Request::param('cat_id'),
@@ -75,8 +75,12 @@ class Index extends BaseController
             'is_release'    => Request::param('is_release'),
             'author'        => Request::param('author'),
             'url'           => Request::param('url'),
+            'tag_id'        => is_array(($tagId = Request::param('tag_id'))) ? implode(',', $tagId) : $tagId,
             'update_time'   => time(),
+            'content'       => Request::param('content', ''),
         ]);
+
+        return $this->message('更新成功')->success();
     }
 
     /**

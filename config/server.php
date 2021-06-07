@@ -7,5 +7,5 @@ return [
 
     // 配置
     'work_num'          => 3,
-    'task_worker_num'   => 2,
+    'task_worker_num'   => 10,
 ];

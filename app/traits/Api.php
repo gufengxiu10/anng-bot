@@ -18,11 +18,14 @@ trait Api
             $data = $data->toArray();
         }
 
-        return ResponseJson::json([
+
+        $data = ResponseJson::json([
             'code'  => $this->apiCode,
             'msg'   => $this->apiMessage,
             'data'  => $data,
         ]);
+
+        return $data;
     }
 
     protected  function code(int $code)

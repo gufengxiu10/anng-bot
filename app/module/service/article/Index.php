@@ -12,7 +12,7 @@ class Index
         $data = Db::name('article')
             ->limit($page, $limit)
             ->select();
-        
+
         return $data;
     }
 
@@ -24,6 +24,14 @@ class Index
         if ($info->isEmpty()) {
             throw new Exception('数据不存在');
         }
+
+        $info['tag_id'] = ($tagIds = explode(',', $info['tag_id'])) ? array_map(fn ($item) => (int)$item, array_filter($tagIds)) : [];
+        $content = '';
+        if ($contentInfo = Db::name('article_content')->where('aid', $info->id)->find()) {
+            $content = $contentInfo->content;
+        }
+
+        $info['content'] = $content;
 
         return $info;
     }
@@ -49,10 +57,14 @@ class Index
 
     public function update($id, $data)
     {
-        Db::name('article')->where('id', $id)->update($data);
-        if (isset($data['content'])) {
-            Db::name('article')->where('id', $id)->update([]);
+        $info = Db::name('article')->where('id', $id)->update($data);
+        if (!$info) {
+            throw new Exception('更新失败');
         }
-        return;
+
+        Db::name('article_content')->where('aid', $id)->update([
+            'content' => $data['content'],
+            'update_time' => time()
+        ]);
     }
 }
