@@ -6,31 +6,26 @@ declare(strict_types=1);
 namespace Anng\lib;
 
 use Anng\lib\db\Config;
-use Anng\lib\db\connect\PdoPool;
-use Anng\lib\db\ki;
-use Anng\lib\db\Sql;
+use Anng\lib\db\Pool;
+use Anng\lib\db\pool\Mysql;
 
 class Db
 {
-    public $pool;
+    public Pool|null $pool = null;
     public $config;
     protected $sql;
 
-    public function create()
+    public function create($class = Mysql::class)
     {
-        if (!$this->pool) {
-            $this->pool = (new PdoPool($this));
+        if ($this->pool === null) {
+            $this->pool = (new $class($this));
         }
+
+        $this->pool->get()->table('article')
+            ->where('id', 10)
+            ->whereOr(fn ($query) => $query->where('kid', 1))
+            ->first();
         return $this;
-    }
-
-    public function getPool()
-    {
-        if (!$this->pool) {
-            $this->pool = (new PdoPool($this));
-        }
-
-        return $this->pool;
     }
 
     /**
@@ -60,7 +55,9 @@ class Db
 
     public function __call($method, $args = [])
     {
-        $data = call_user_func_array([new Sql($this, $this->config), $method], $args);
+        $connect = $this->pool->get();
+        $data = call_user_func_array([$connect, $method], $args);
+        $this->pool->put($connect);
         return $data;
     }
 }

@@ -3,27 +3,18 @@
 declare(strict_types=1);
 
 
-namespace Anng\lib\db\connect;
+namespace Anng\lib\db\pool;
 
-use Anng\lib\Db;
+use Anng\lib\db\Pool;
 use PDO;
+use Swoole\Database\PDOPool;
 use Swoole\Database\PDOConfig;
-use Swoole\Database\PDOPool as SwoolePdoPool;
 
-class PdoPool
+class Mysql extends Pool
 {
-    protected object $pool;
-    protected Db $db;
-
-    public function __construct(Db $db)
+    public function create()
     {
-        $this->db = $db;
-        $this->createDb();
-    }
-
-    private function createDb()
-    {
-        $this->pool = new SwoolePdoPool((new PDOConfig)
+        $this->pool = new PDOPool((new PDOConfig)
                 ->withHost($this->db->config->get('host'))
                 ->withPort($this->db->config->get('port'))
                 ->withDbName($this->db->config->get('name'))
@@ -37,16 +28,5 @@ class PdoPool
         );
 
         return $this;
-    }
-
-    public function get()
-    {
-        $conntion = $this->pool->get();
-        return $conntion;
-    }
-
-    public function put($pdo)
-    {
-        return $this->pool->put($pdo);
     }
 }

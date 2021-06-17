@@ -6,6 +6,6 @@ return [
     'prot'              => 9502,
 
     // 配置
-    'work_num'          => 3,
-    'task_worker_num'   => 10,
+    'work_num'          => 1,
+    'task_worker_num'   => 1,
 ];

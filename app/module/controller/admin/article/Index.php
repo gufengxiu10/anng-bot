@@ -4,7 +4,6 @@ namespace app\module\controller\admin\article;
 
 use Anng\lib\facade\Request;
 use app\BaseController;
-use app\module\requests\Article as ArticleRequest;
 use app\module\service\article\Index as ArticleIndex;
 
 class Index extends BaseController
@@ -15,10 +14,10 @@ class Index extends BaseController
      * @author: ANNG
      * @return {*}
      */
-    public function lists()
+    public function lists(Request $request)
     {
         return $this->success($this->service(ArticleIndex::class)
-            ->lists(Request::param('page', 1), Request::param('limit', 10)));
+            ->lists($request));
     }
 
     /**

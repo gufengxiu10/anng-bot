@@ -4,60 +4,62 @@ declare(strict_types=1);
 
 namespace Anng\lib\db;
 
-use Anng\lib\db\biluder\sql\Insert;
-use Anng\lib\db\biluder\sql\Select;
-use Anng\lib\db\biluder\sql\Update;
-
-abstract class Biluder
+class Biluder
 {
+    protected $selectSql = "SELECT %FIELD% FROM %TABLE% %WHERE% %LIMIT%";
 
-    public function __construct(private Parse $parse)
+    public function get(Query $query, $one)
+    {
+        dump(!empty($where = $this->parseWhere($query)) ? "WHERE " . ltrim(implode('', $where), 'AND') : []);
+        // return str_replace(["%TABLE%", "%FIELD%", "%WHERE%", "%LIMIT%"], [
+        //     $this->parseTable($query),
+        //     $this->parseField($query),
+        //     !empty($where = $this->parseWhere($query)) ? "WHERE " . ltrim(ltrim(implode(' ', $where), 'AND'), 'OR') : [],
+        //     $one ? $this->parseLimit($query) : 1
+        // ], $this->selectSql);
+    }
+
+    public function parseTable(Query $query)
+    {
+        return ($alias = $query->getOption('alias')) ? $alias . $query->getOption('table') : $query->getOption('table');
+    }
+
+    public function parseField(Query $query)
+    {
+        return $query->getOption('field');
+    }
+
+    public function parseWhere(Query $query)
+    {
+        $where = $query->getOption('where');
+
+        $sql = '';
+        $t = [];
+        foreach ($where as $key => $item) {
+            foreach ($item as $value) {
+                if ($value instanceof Query) {
+                    $t = array_merge($t, $this->parseWhere($value));
+                } else {
+                    if (is_null($value[2])) {
+                        $t[] = " {$key} {$value[0]} = {$value[1]}";
+                    } else {
+                        $sql .= "{$value[0]} {$value[1]} " . (is_int($value[1]) ? $value[1] : "'{$value[1]}'");
+                    }
+                }
+            }
+        }
+        dump($t);
+        return $t;
+    }
+
+
+    public function parseLogic()
     {
         # code...
     }
 
-    use Insert;
-    use Update;
-    use Select;
-
-    protected array $option = [];
-
-    protected $selectFindSql = "SELECT %FIELD% FROM %TABLE% %WHERE% %LIMIT%";
-
-    /**
-     * @name: 
-     * @param {*}
-     * @author: ANNG
-     * @todo: 
-     * @Date: 2021-02-02 16:07:58
-     * @return {*}
-     */
-    public function find()
+    private function parseLimit(Query $query)
     {
-        $sql = str_replace(["%TABLE%", "%FIELD%", "%WHERE%", "%LIMIT%"], [
-            $this->parse->table(),
-            $this->parse->field(),
-            $this->parse->where(),
-            'limit 1',
-        ], $this->selectFindSql);
-        return $sql;
-    }
-
-    /**
-     * @name: 
-     * @param {*}
-     * @author: ANNG
-     * @todo: 
-     * @Date: 2021-02-02 16:07:58
-     * @return {*}
-     */
-    public function select()
-    {
-        return str_replace(["%TABLE%", "%FIELD%", "%WHERE%", "%LIMIT%"], [
-            $this->parse->table(),
-            $this->parse->field(),
-            $this->parse->where(),
-            $this->parse->limit(),
-        ], $this->selectFindSql);
+        # code...
     }
 }

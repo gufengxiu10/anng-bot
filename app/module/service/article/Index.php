@@ -7,9 +7,11 @@ use Exception;
 
 class Index
 {
-    public function lists($page, $limit)
+    public function lists($request)
     {
         $data = Db::name('article')
+            ->where(function () {
+            })
             ->limit($page, $limit)
             ->select();
 
