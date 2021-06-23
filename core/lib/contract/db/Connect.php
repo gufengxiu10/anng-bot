@@ -7,4 +7,6 @@ use Anng\lib\db\Query;
 interface Connect
 {
     public function table(string $table): Query;
+
+    public function send(mixed $query, mixed $sql = null);
 }

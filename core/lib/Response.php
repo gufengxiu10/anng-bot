@@ -23,9 +23,6 @@ abstract class Response implements ResponseResponse
         # code...
     }
 
-
-    
-
     abstract public function end();
 
     public function __call($method, $args = [])

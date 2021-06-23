@@ -5,19 +5,20 @@ declare(strict_types=1);
 
 namespace Anng\lib\db;
 
+use Anng\lib\contract\db\Connect;
 use Anng\lib\facade\Cache;
 
 class Accident
 {
     private $tableFileInfo = [];
 
-    public function __construct(public $connect, public $parse)
+    public function __construct(public Connect $connect, protected Query $query)
     {
     }
 
     public function getPk(): null|string
     {
-        $info = $this->getField($this->parse->table());
+        $info = $this->getField($this->query->table);
         foreach ($info as $key => $value) {
             if ($value['key'] == true) {
                 return $key;
@@ -39,16 +40,7 @@ class Accident
                 $this->tableFileInfo[$table] = Cache::get("{$table}File", null, 'mysql');
             } else {
                 $sql = 'SHOW FULL COLUMNS FROM ' . $table;
-                $statement = $this->connect->prepare($sql);
-                if (!$statement) {
-                    throw new \Exception('Prepare failed');
-                }
-                $result = $statement->execute();
-                if (!$result) {
-                    throw new \Exception('Execute failed');
-                }
-
-                $data = $statement->fetchAll();
+                $data = $this->connect->send($sql);
                 foreach ($data as $val) {
                     $this->tableFileInfo[$table][$val['Field']] = [
                         'type'      => $val['Type'],

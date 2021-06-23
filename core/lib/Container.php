@@ -6,10 +6,7 @@ namespace Anng\lib;
 
 use Anng\lib\reflection\ReflectionClass;
 use Closure;
-use Exception;
 use Psr\Container\ContainerInterface;
-use ReflectionFunctionAbstract;
-use Swoole\Coroutine;
 
 class Container implements ContainerInterface
 {
@@ -22,6 +19,7 @@ class Container implements ContainerInterface
      */
     protected array $instances = [];
 
+    protected array $alias = [];
     /**
      * @name 容器绑定标识
      * @var array
@@ -48,7 +46,12 @@ class Container implements ContainerInterface
     {
         if (is_array($abstract)) {
             foreach ($abstract as $key => $val) {
-                $this->bind($key, $val);
+                if (is_array($val)) {
+                    $this->alias[ucfirst($val[0])] = $key;
+                    $this->bind($key, $val[1]);
+                } else {
+                    $this->bind($key, $val);
+                }
             }
         } elseif ($concrete instanceof Closure) {
             //回调函数直接放入容器
@@ -162,9 +165,6 @@ class Container implements ContainerInterface
         return static::$instance;
     }
 
-
-    
-
     public function get($name)
     {
         return $this->make($name);
@@ -177,7 +177,6 @@ class Container implements ContainerInterface
 
     public function __get($name)
     {
-
         return $this->get($name);
     }
 }

@@ -7,13 +7,12 @@ use Exception;
 
 class Index
 {
-    public function lists($request)
+    public function lists()
     {
         $data = Db::name('article')
-            ->where(function () {
-            })
-            ->limit($page, $limit)
-            ->select();
+            ->select('id', 'title')
+            // ->limit(1)
+            ->get();
 
         return $data;
     }
@@ -21,20 +20,16 @@ class Index
     public function info($id)
     {
         $info = Db::name('article')
-            ->find($id);
+            ->first($id);
 
         if ($info->isEmpty()) {
             throw new Exception('数据不存在');
         }
 
         $info['tag_id'] = ($tagIds = explode(',', $info['tag_id'])) ? array_map(fn ($item) => (int)$item, array_filter($tagIds)) : [];
-        $content = '';
-        if ($contentInfo = Db::name('article_content')->where('aid', $info->id)->find()) {
-            $content = $contentInfo->content;
+        if ($contentInfo = Db::name('article_content')->where('aid', $info->id)->first()) {
+            $info['content'] = $contentInfo->content;
         }
-
-        $info['content'] = $content;
-
         return $info;
     }
 

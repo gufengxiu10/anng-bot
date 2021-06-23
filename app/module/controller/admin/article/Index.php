@@ -2,6 +2,7 @@
 
 namespace app\module\controller\admin\article;
 
+use Anng\lib\contract\RequestInterface;
 use Anng\lib\facade\Request;
 use app\BaseController;
 use app\module\service\article\Index as ArticleIndex;
@@ -14,7 +15,7 @@ class Index extends BaseController
      * @author: ANNG
      * @return {*}
      */
-    public function lists(Request $request)
+    public function lists(RequestInterface $request)
     {
         return $this->success($this->service(ArticleIndex::class)
             ->lists($request));

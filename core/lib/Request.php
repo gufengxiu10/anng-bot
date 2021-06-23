@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Anng\lib;
 
+use Anng\lib\contract\RequestInterface;
 use Anng\lib\file\UploadFile;
 use Swoole\Http\Request as HttpRequest;
 
-class Request
+class Request implements RequestInterface
 {
     private $request = null;
     private $param = [];

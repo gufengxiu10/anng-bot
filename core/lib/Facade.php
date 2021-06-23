@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Anng\lib;
 
+use Anng\lib\contract\FacadeInterface;
 
-abstract class Facade
+abstract class Facade implements FacadeInterface
 {
     /**
      * @name: 获得对象

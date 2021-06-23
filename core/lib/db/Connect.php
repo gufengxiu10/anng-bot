@@ -7,12 +7,15 @@ namespace Anng\lib\db;
 
 use Anng\lib\contract\db\Connect as ConnectInterface;
 use Closure;
+use PDO;
+use PDOException;
 use Swoole\Database\PDOProxy;
 
 
 abstract class Connect implements ConnectInterface
 {
     protected $build;
+    public $accident;
 
     public function __construct(protected PDOProxy $connect, protected Config $config)
     {
@@ -36,20 +39,43 @@ abstract class Connect implements ConnectInterface
 
     public function table(string $table): Query
     {
-        dump(10);
         return $this->query()->table($table);
     }
 
+    public function name(string $table): Query
+    {
+        return $this->query()->name($table);
+    }
 
     public function get($query, bool $one = false)
     {
-        $this->send($query, fn () => $this->build->get($query, $one));
+        $result = $this->send($query, fn () => $this->build->get($query, $one));
+        if ($one === true) {
+            return Collection::make($result[0] ?? []);
+        }
+
+        return $result;
     }
 
-    protected function send($query, $sql)
+    public function send($query, $sql = null)
     {
-        if ($sql instanceof Closure) {
+        if (!is_null($sql) && $sql instanceof Closure) {
             $sql = $sql($query);
+        } else {
+            $sql = $query;
+        }
+        dump($sql);
+        try {
+            $statement = $this->connect->prepare($sql);
+            $result = $statement->execute();
+            if (!$result) {
+                throw new \Exception('Execute failed');
+            }
+
+            return $statement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $th) {
+            //throw $th;
+            dump($th->getMessage());
         }
     }
 }

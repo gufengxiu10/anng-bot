@@ -21,10 +21,6 @@ class Db
             $this->pool = (new $class($this));
         }
 
-        $this->pool->get()->table('article')
-            ->where('id', 10)
-            ->whereOr(fn ($query) => $query->where('kid', 1))
-            ->first();
         return $this;
     }
 

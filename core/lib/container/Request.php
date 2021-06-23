@@ -3,7 +3,7 @@
  * @Description: 请求级容器
  * @Author: ANNG
  * @Date: 2021-05-20 16:54:06
- * @LastEditTime: 2021-05-20 17:26:31
+ * @LastEditTime: 2021-06-23 10:37:57
  * @LastEditors: ANNG
  */
 
@@ -11,12 +11,22 @@ declare(strict_types=1);
 
 namespace Anng\lib\container;
 
-use Anng\lib\Container;
 use Swoole\Coroutine;
 
 class Request
 {
     protected array $instances = [];
+    protected array $alias = [];
+
+    public function bind($alias, $name, $value = '')
+    {
+        $this->alias[$this->getTopCid()][$alias] = $name;
+        if (!empty($value)) {
+            $this->set($name, $value);
+        }
+
+        return $this;
+    }
 
     public function get($name)
     {
@@ -25,6 +35,7 @@ class Request
 
     public function set($name, $value): static
     {
+        dump($value::class);
         $this->instances[$this->getTopCid()][$name] = $value;
         return $this;
     }
@@ -36,6 +47,7 @@ class Request
         }
 
         unset($this->instances[$this->getTopCid()]);
+        unset($this->alias[$this->getTopCid()]);
     }
 
     protected function info()
@@ -44,9 +56,12 @@ class Request
     }
 
 
-    protected function has($name)
+    public function has($name)
     {
-        return $this->info() ?? ($this->info()[$name] ? true : false);
+        if ($this->info()) {
+            return isset($this->info()[$name]) ? true : false;
+        }
+        return false;
     }
 
     protected function getTopCid()

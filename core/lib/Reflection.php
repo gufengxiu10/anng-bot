@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Anng\lib;
 
+use Anng\lib\contract\FacadeInterface;
+use Anng\lib\facade\App;
 use Exception;
 use ReflectionMethod;
 
@@ -38,7 +40,11 @@ abstract class Reflection
                 if (isset($args[$paramName])) {
                     $data[] = $args[$paramName];
                 } else {
-                    $data[] = $this->instance($name, $args, false);
+                    if (App::getInstance()->has($name)) {
+                        $data[] = App::getInstance()->get($name)(App::getInstance());
+                    } else {
+                        $data[] = $this->instance($name, $args);
+                    }
                 }
             } else {
                 if ($type == 1 && !empty($args)) {

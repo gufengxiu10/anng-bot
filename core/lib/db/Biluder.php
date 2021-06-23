@@ -10,13 +10,12 @@ class Biluder
 
     public function get(Query $query, $one)
     {
-        dump(!empty($where = $this->parseWhere($query)) ? "WHERE " . ltrim(implode('', $where), 'AND') : []);
-        // return str_replace(["%TABLE%", "%FIELD%", "%WHERE%", "%LIMIT%"], [
-        //     $this->parseTable($query),
-        //     $this->parseField($query),
-        //     !empty($where = $this->parseWhere($query)) ? "WHERE " . ltrim(ltrim(implode(' ', $where), 'AND'), 'OR') : [],
-        //     $one ? $this->parseLimit($query) : 1
-        // ], $this->selectSql);
+        return str_replace(["%TABLE%", "%FIELD%", "%WHERE%", "%LIMIT%"], [
+            $this->parseTable($query),
+            $this->parseField($query),
+            !empty($where = $this->parseWhere($query)) ? "WHERE " . $where : '',
+            $one ?  "LIMIT 1" : $this->parseLimit($query)
+        ], $this->selectSql);
     }
 
     public function parseTable(Query $query)
@@ -26,40 +25,64 @@ class Biluder
 
     public function parseField(Query $query)
     {
-        return $query->getOption('field');
+        $field = $query->getOption('select');
+        if (empty($field)) {
+            return '*';
+        }
+
+        $field = array_map(fn ($item) => "`{$item}`", $field);
+        return implode(',', $field);
     }
 
     public function parseWhere(Query $query)
     {
         $where = $query->getOption('where');
+        if (empty($where)) {
+            return '';
+        }
 
         $sql = '';
-        $t = [];
-        foreach ($where as $key => $item) {
-            foreach ($item as $value) {
-                if ($value instanceof Query) {
-                    $t = array_merge($t, $this->parseWhere($value));
-                } else {
-                    if (is_null($value[2])) {
-                        $t[] = " {$key} {$value[0]} = {$value[1]}";
-                    } else {
-                        $sql .= "{$value[0]} {$value[1]} " . (is_int($value[1]) ? $value[1] : "'{$value[1]}'");
-                    }
-                }
-            }
+        foreach ($where as $logic => $item) {
+            $sql .= $this->parseLogic($logic, $item);
         }
-        dump($t);
-        return $t;
+        return ltrim(ltrim($sql), array_key_first($where));
     }
 
 
-    public function parseLogic()
+    public function parseLogic($logic, $item)
     {
-        # code...
+        $t = [];
+        foreach ($item as $value) {
+            if ($value instanceof Query) {
+                if (!empty($k = $this->parseWhere($value))) {
+                    $t[] = ' ' . $logic . ' ( ' . $k . ' )';
+                }
+            } else {
+                if (is_null($value[2])) {
+                    $t[] = "{$logic} {$value[0]} = {$value[1]}";
+                } else {
+                    $t[] .= "{$logic} {$value[0]} {$value[1]} " . (is_int($value[2]) ? $value[2] : "'{$value[2]}'");
+                }
+            }
+        }
+
+        return ltrim(implode(' ', $t), $logic);
     }
 
     private function parseLimit(Query $query)
     {
-        # code...
+        $limit = $query->getOption('limit');
+        if (empty($limit)) {
+            return '';
+        }
+
+        [$start, $end] = $limit;
+        $sql = 'LIMIT ';
+        if (is_null($end)) {
+            $sql .= $start;
+        } else {
+            $sql .= "{$start},{$end}";
+        }
+        return $sql;
     }
 }

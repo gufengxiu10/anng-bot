@@ -56,10 +56,6 @@ class ReflectionClass extends Reflection
      */
     public function instance(): object
     {
-        if ($this->instance) {
-            return $this->instance;
-        }
-
         if ($param = $this->getConstructorParam()) {
             $this->instance = $this->refltion->newInstance($param);
         } else {

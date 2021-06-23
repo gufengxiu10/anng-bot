@@ -12,11 +12,11 @@ use Anng\lib\Db;
 use Anng\lib\Table;
 use Anng\lib\Annotations;
 use Anng\lib\cache\Cache;
-use Anng\lib\container\Request as ContainerRequest;
+use Anng\lib\Context;
+use Anng\lib\contract\RequestInterface;
 use Anng\lib\Exception;
 use Anng\lib\Messages;
 use Anng\lib\Route;
-use Anng\lib\Request;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
@@ -33,13 +33,12 @@ $container->bind([
     'Table'             => Table::class,
     'Annotations'       => Annotations::class,
     'Messages'          => Messages::class,
-    'Request'           => Request::class,
-    'Response'          => Response::class,
     'Messages'          => Messages::class,
     'Route'             => Route::class,
     'Cache'             => Cache::class,
     'Exception'         => Exception::class,
-    'RequestContainer'  => ContainerRequest::class
+    'Context'           => Context::class,
+    RequestInterface::class  => fn (Container $container) => ($container->getInstance()->make('context'))->get('request')
 ]);
 
 require_once 'Helper.php';
