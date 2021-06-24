@@ -5,129 +5,136 @@ declare(strict_types=1);
 namespace Anng\lib;
 
 use ArrayAccess;
+use Doctrine\Common\Collections\ArrayCollection;
+use Ramsey\Collection\AbstractCollection;
 
-class Collection implements ArrayAccess
+class Collection extends ArrayCollection
 {
-    protected array $items = [];
+    // protected array $items = [];
 
-    public function __construct($data)
-    {
-        $this->items = $this->convertToArray($data);
-    }
+    // public function __construct($data)
+    // {
+    //     $this->items = $this->convertToArray($data);
+    // }
 
     public static function make($data)
     {
         return new static($data);
     }
 
-    public function toArray()
+    public function getType(): string
     {
-        return $this->items;
+        return 'stdClass';
     }
 
-    public function each(callable $done)
-    {
-        foreach ($this->items as $key => &$item) {
-            $oitem = static::make($item);
-            $done($oitem, $key);
-            $item = $oitem->toArray();
-        }
+    // public function toArray()
+    // {
+    //     return $this->items;
+    // }
 
-        return $this;
-    }
+    // public function each(callable $done)
+    // {
+    //     foreach ($this->items as $key => &$item) {
+    //         $oitem = static::make($item);
+    //         $done($oitem, $key);
+    //         $item = $oitem->toArray();
+    //     }
 
-    public function isEmpty()
-    {
-        return empty($this->items);
-    }
+    //     return $this;
+    // }
 
-    /**
-     * @name: 判断字段是否存在 
-     * @param {*} $name
-     * @author: ANNG
-     * @return {*}
-     */
-    public function has($name)
-    {
-        return  isset($this->items[$name]) ?? false;;
-    }
+    // public function isEmpty()
+    // {
+    //     return empty($this->items);
+    // }
 
-
-    public function push(string $name, $value, $empty = false): static
-    {
-
-        if ($empty === true && empty($value)) {
-            return $this;
-        }
-
-        if (!$this->has($name)) {
-            $this->items[$name] = [];
-        }
-
-        array_push($this->items[$name], $value);
-        return $this;
-    }
-
-    public function add(string $name, $value, $empty = false)
-    {
-        if ($empty === true && empty($value)) {
-            return $this;
-        }
-
-        $this->items[$name] = $value;
-        return $this;
-    }
+    // /**
+    //  * @name: 判断字段是否存在 
+    //  * @param {*} $name
+    //  * @author: ANNG
+    //  * @return {*}
+    //  */
+    // public function has($name)
+    // {
+    //     return  isset($this->items[$name]) ?? false;;
+    // }
 
 
-    public function offsetExists($offset)
-    {
-        return isset($this->items[$offset]);
-    }
+    // public function push(string $name, $value, $empty = false): static
+    // {
 
-    public function offsetSet($offset, $val)
-    {
-        if (is_null($offset)) {
-            $this->items[] = $val;
-        } else {
-            $this->items[$offset] = $val;
-        }
-    }
+    //     if ($empty === true && empty($value)) {
+    //         return $this;
+    //     }
 
-    public function offsetGet($offset)
-    {
-        return $this->items[$offset];
-    }
+    //     if (!$this->has($name)) {
+    //         $this->items[$name] = [];
+    //     }
 
-    public function offsetUnset($offset)
-    {
-        unset($this->items[$offset]);
-    }
+    //     array_push($this->items[$name], $value);
+    //     return $this;
+    // }
+
+    // public function add(string $name, $value, $empty = false)
+    // {
+    //     if ($empty === true && empty($value)) {
+    //         return $this;
+    //     }
+
+    //     $this->items[$name] = $value;
+    //     return $this;
+    // }
+
+
+    // public function offsetExists($offset)
+    // {
+    //     return isset($this->items[$offset]);
+    // }
+
+    // public function offsetSet($offset, $val)
+    // {
+    //     if (is_null($offset)) {
+    //         $this->items[] = $val;
+    //     } else {
+    //         $this->items[$offset] = $val;
+    //     }
+    // }
+
+    // public function offsetGet($offset)
+    // {
+    //     return $this->items[$offset];
+    // }
+
+    // public function offsetUnset($offset)
+    // {
+    //     unset($this->items[$offset]);
+    // }
 
 
 
-    public function __get($name)
-    {
-        return $this->items[$name];
-    }
+    // public function __get($name)
+    // {
+    //     return $this->items[$name];
+    // }
 
-    public function __set($name, $value)
-    {
-        $this->items[$name] = $value;
-    }
+    // public function __set($name, $value)
+    // {
+    //     $this->items[$name] = $value;
+    // }
 
-    /**
-     * 转换成数组
-     *
-     * @access public
-     * @param mixed $itemss 数据
-     * @return array
-     */
-    protected function convertToArray($itemss): array
-    {
-        // if ($itemss instanceof self) {
-        //     return $itemss->all();
-        // }
+    // /**
+    //  * 转换成数组
+    //  *
+    //  * @access public
+    //  * @param mixed $itemss 数据
+    //  * @return array
+    //  */
+    // protected function convertToArray($itemss): array
+    // {
+    //     // if ($itemss instanceof self) {
+    //     //     return $itemss->all();
+    //     // }
 
-        return (array) $itemss;
-    }
+    //     return (array) $itemss;
+    // }
 }

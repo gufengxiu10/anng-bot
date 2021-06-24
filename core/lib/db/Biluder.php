@@ -4,9 +4,19 @@ declare(strict_types=1);
 
 namespace Anng\lib\db;
 
+use Anng\lib\contract\db\Connect;
+
 class Biluder
 {
     protected $selectSql = "SELECT %FIELD% FROM %TABLE% %WHERE% %LIMIT%";
+    protected $existsSql = "SELECT 1 FROM %TABLE% %WHERE% LIMIT 1";
+    protected $insertSql = "INSERT INTO %TABLE% VALUES %DATA%";
+    protected $updateSql = "UPDATE %TABLE% SET %DATA% %WHERE%";
+
+    public function __construct(protected Connect $connect)
+    {
+        # code...
+    }
 
     public function get(Query $query, $one)
     {
@@ -16,6 +26,64 @@ class Biluder
             !empty($where = $this->parseWhere($query)) ? "WHERE " . $where : '',
             $one ?  "LIMIT 1" : $this->parseLimit($query)
         ], $this->selectSql);
+    }
+
+    public function exists(Query $query)
+    {
+        return str_replace(["%TABLE%", "%WHERE%"], [
+            $this->parseTable($query),
+            !empty($where = $this->parseWhere($query)) ? "WHERE " . $where : ''
+        ], $this->existsSql);
+    }
+
+    public function insert(Query $query)
+    {
+        $data = $query->getOption('data');
+        if (empty($data)) {
+            return 'not DATA';
+        }
+
+        $field = array_keys($data);
+        $values = array_values($data);
+        $table = $this->parseTable($query);
+        $table .= '(' . implode(',', array_map(fn ($item) => "`{$item}`", $field)) . ')';
+        $values = '(' . implode(',', array_map(fn ($item) => is_numeric($item) ? $item : "'{$item}'", $values)) . ')';
+        return str_replace(["%TABLE%", "%DATA%"], [
+            $table,
+            $values
+        ], $this->insertSql);
+    }
+
+    public function update(Query $query)
+    {
+        $data = $query->getOption('data');
+        if (empty($data)) {
+            return 'not DATA';
+        }
+
+        $field = $this->connect->getField($query->getOption('table'));
+        foreach ($data as $key => &$item) {
+            if (!isset($field[$key])) {
+                unset($data[$key]);
+                continue;
+            }
+
+            $item = "`{$key}` = " . (is_numeric($item) ? $item : "'{$item}'");
+        }
+
+
+        $data = array_intersect_key($data, $field);
+
+        $where = $this->parseWhere($query);
+        if (empty($where)) {
+            return 'where not condition';
+        }
+
+        return str_replace(["%TABLE%", "%DATA%", "%WHERE%"], [
+            $this->parseTable($query),
+            implode(',', $data),
+            "WHERE " . $where,
+        ], $this->updateSql);
     }
 
     public function parseTable(Query $query)

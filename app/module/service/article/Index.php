@@ -27,8 +27,8 @@ class Index
         }
 
         $info['tag_id'] = ($tagIds = explode(',', $info['tag_id'])) ? array_map(fn ($item) => (int)$item, array_filter($tagIds)) : [];
-        if ($contentInfo = Db::name('article_content')->where('aid', $info->id)->first()) {
-            $info['content'] = $contentInfo->content;
+        if (Db::name('article_content')->where('aid', $info->id)->exists()) {
+            $info['content'] = Db::name('article_content')->where('aid', $info->id)->first()->toArray();
         }
         return $info;
     }
@@ -41,7 +41,7 @@ class Index
             'create_time'   => time(),
             'update_time'   => time(),
         ]);
-
+        dump($data);
         if ($info && isset($data['content'])) {
             Db::name('article_content')->insert([
                 'aid'           => $info['id'],

@@ -9,4 +9,7 @@ interface Connect
     public function table(string $table): Query;
 
     public function send(mixed $query, mixed $sql = null);
+
+
+    public function getField(string $table);
 }

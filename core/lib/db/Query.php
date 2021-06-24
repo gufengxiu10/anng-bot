@@ -16,7 +16,6 @@ class Query
     public function __construct(protected Connect $connect)
     {
         $this->prefix = $this->connect->getConfig('prefix');
-        $this->accident = new Accident($connect, $this);
     }
 
     public function getOption($name = '')
@@ -72,10 +71,66 @@ class Query
         return $this->connect->get($this, true);
     }
 
+    /**
+     * @name: 获得数据列表
+     * @param {*}
+     * @author: ANNG
+     * @return {*}
+     */
     public function get()
     {
         return $this->connect->get($this);
     }
+
+    /**
+     * @name: 判断记录是否存在
+     * @param {*}
+     * @author: ANNG
+     * @return {*}
+     */
+    public function exists()
+    {
+        return $this->connect->exists($this) > 0 ? true : false;
+    }
+
+    /**
+     * @name: 添加
+     * @param {*} $data
+     * @author: ANNG
+     * @return {*}
+     */
+    public function insert($data = [])
+    {
+        if (isset($this->option['data']) && !empty($this->option['data'])) {
+            $data = array_merge($this->option['data'], $data);
+        }
+
+        $this->option['data'] = $data;
+        $id = $this->connect->insert($this);
+        $pk = $this->connect->getPk($this->option['table']);
+        return array_merge($this->option['data'], [$pk => $id]);
+    }
+
+    public function insertGetId()
+    {
+    }
+
+    /**
+     * @name: 更新
+     * @param {*}
+     * @author: ANNG
+     * @return {*}
+     */
+    public function update($data = [])
+    {
+        if (isset($this->option['data']) && !empty($this->option['data'])) {
+            $data = array_merge($this->option['data'], $data);
+        }
+
+        $this->option['data'] = $data;
+        $this->connect->update($this);
+    }
+
 
     public function __get($name)
     {
