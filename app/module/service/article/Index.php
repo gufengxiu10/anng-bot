@@ -10,8 +10,6 @@ class Index
     public function lists()
     {
         $data = Db::name('article')
-            ->select('id', 'title')
-            // ->limit(1)
             ->get();
 
         return $data;
@@ -26,10 +24,11 @@ class Index
             throw new Exception('数据不存在');
         }
 
-        $info['tag_id'] = ($tagIds = explode(',', $info['tag_id'])) ? array_map(fn ($item) => (int)$item, array_filter($tagIds)) : [];
+        $info->tag_id = ($tagIds = explode(',', $info['tag_id'])) ? array_map(fn ($item) => (int)$item, array_filter($tagIds)) : [];
         if (Db::name('article_content')->where('aid', $info->id)->exists()) {
-            $info['content'] = Db::name('article_content')->where('aid', $info->id)->first()->toArray();
+            $info['content'] = Db::name('article_content')->where('aid', $info->id)->first();
         }
+
         return $info;
     }
 
@@ -41,7 +40,7 @@ class Index
             'create_time'   => time(),
             'update_time'   => time(),
         ]);
-        dump($data);
+
         if ($info && isset($data['content'])) {
             Db::name('article_content')->insert([
                 'aid'           => $info['id'],

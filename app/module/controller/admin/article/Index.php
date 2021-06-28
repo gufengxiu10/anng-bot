@@ -29,7 +29,7 @@ class Index extends BaseController
      */
     public function info($id)
     {
-        return $this->service(ArticleIndex::class)->info($id);
+        return $this->success( $this->service(ArticleIndex::class)->info($id));
     }
 
     /**

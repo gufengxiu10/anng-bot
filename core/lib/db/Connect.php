@@ -98,7 +98,7 @@ abstract class Connect implements ConnectInterface
         } else {
             $sql = $query;
         }
-
+        dump($sql);
         try {
             $statement = $this->connect->prepare($sql);
             $result = $statement->execute();
@@ -109,7 +109,8 @@ abstract class Connect implements ConnectInterface
             return $statement;
         } catch (PDOException $th) {
             //throw $th;
-            dump($th->getMessage());
+            dump($th->getMessage() . '|' . $sql);
+            throw new \Exception($th->getMessage());
         }
     }
 

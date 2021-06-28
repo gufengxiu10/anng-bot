@@ -65,7 +65,7 @@ class Query
     public function first($id = null)
     {
         if (!is_null($id)) {
-            $this->where($this->accident->getPk(), $id);
+            $this->where($this->connect->getPk($this->option['table']), $id);
         }
 
         return $this->connect->get($this, true);

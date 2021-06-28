@@ -13,12 +13,13 @@
         "swoole/ide-helper": "^4.6"
     },
     "require": {
+        "php": "^7.3|^8.0",
         "symfony/finder": "^5.1",
         "symfony/filesystem": "^5.1",
         "vlucas/phpdotenv": "^5.3",
         "predis/predis": "^1.1",
         "swlib/archer": "^1.1",
-        "psr/container": "^2.0",
+        "psr/container": "^1.0",
         "swlib/saber": "^1.0",
         "guzzlehttp/guzzle": "^7.2",
         "swoolex/swoolex": "^2.0",
@@ -30,6 +31,9 @@
         "symfony/validator": "^5.2",
         "firebase/php-jwt": "^5.2",
         "doctrine/collections": "^1.6",
-        "ramsey/collection": "^1.1"
+        "ramsey/collection": "^1.1",
+        "illuminate/contracts": "^8.48",
+        "illuminate/collections": "^8.48",
+        "illuminate/support": "^8.48"
     }
 }
