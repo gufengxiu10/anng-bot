@@ -16,7 +16,7 @@ trait WhereQuery
      * @Date: 2021-02-02 16:10:22
      * @return {*}
      */
-    public function where(string|callable $field, $condition = null, $value = null)
+    public function where(string|callable $field, $condition = null, $value = null): static
     {
         if (is_callable($field)) {
             $query = (new static($this->connect));

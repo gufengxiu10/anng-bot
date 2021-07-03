@@ -48,14 +48,14 @@ abstract class Connect implements ConnectInterface
         return $this->query()->name($table);
     }
 
-    public function get($query, bool $one = false)
+    public function get($query, bool $one = false): Collection
     {
         $result = $this->send($query, fn () => $this->build->get($query, $one))->fetchAll(PDO::FETCH_ASSOC);;
         if ($one === true) {
             return Collection::make($result[0] ?? []);
         }
 
-        return $result;
+        return Collection::make($result);
     }
 
     /**
@@ -87,8 +87,7 @@ abstract class Connect implements ConnectInterface
 
     public function update(Query $query)
     {
-        dump($this->build->update($query));
-        $this->send($query, fn () => $this->build->update($query));
+        return $this->send($query, fn () => $this->build->update($query))->rowCount();
     }
 
     public function send($query, $sql = null)

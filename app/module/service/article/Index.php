@@ -2,15 +2,44 @@
 
 namespace app\module\service\article;
 
+use Anng\lib\contract\RequestInterface;
 use Anng\lib\facade\Db;
 use Exception;
 
 class Index
 {
-    public function lists()
+    public function lists(RequestInterface $request)
     {
         $data = Db::name('article')
-            ->get();
+            ->where(function ($query) use ($request) {
+                if ($request->has('cate', 'param', true)) {
+                    $query->where('cat_id', $request->param('cate'));
+                }
+
+                if ($request->has('key', 'param', true) && $request->has('keyValue', 'param', true)) {
+                    switch ($request->param('key')) {
+                        case 'id':
+                            $query->where('id', $request->param('keyValue'));
+                            break;
+                        case 'name':
+                            $query->where('title', 'like', "%{$request->param('keyValue')}%");
+                            break;
+                    }
+                }
+            })
+            ->get()
+            ->map(function ($item) {
+                if ($item['cat_id'] >  0 && Db::name('article_cate')->where('id', $item['cat_id'])->exists()) {
+                    $item['cate'] = Db::name('article_cate')->where('id', $item['cat_id'])->first();
+                }
+
+                if ($item['tag_id'] > 0) {
+                    $item['tag'] = Db::name('tag')->where('id', 'in', $item['tag_id'])->get();
+                }
+                dump($item);
+
+                return $item;
+            });
 
         return $data;
     }

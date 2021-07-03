@@ -25,7 +25,7 @@ class Request implements RequestInterface
     }
 
 
-    public function has($name, $type = 'param', $isEmpty = false)
+    public function has($name, $type = 'param', $isEmpty = false): bool
     {
         $data = '';
         switch ($type) {
@@ -74,7 +74,7 @@ class Request implements RequestInterface
         return $this->method() == $method ?  true : false;
     }
 
-    public function param($name = '', $defalut = '')
+    public function param($name = '', $defalut = ''): mixed
     {
         if (!empty($name)) {
             return $this->param[$name] ?? $defalut;
@@ -82,7 +82,7 @@ class Request implements RequestInterface
         return $this->param;
     }
 
-    public function file($name = '')
+    public function file($name = ''): mixed
     {
         if (empty($name)) {
             $name = 'file';
@@ -90,9 +90,8 @@ class Request implements RequestInterface
 
         if (isset($this->files[$name])) {
             $file = $this->files[$name];
-            return UploadFile::make($file['tmp_name'], $file['name'], $file['error']);
+            return new UploadFile($file['tmp_name'], $file['name']);
         }
-
         return false;
     }
 

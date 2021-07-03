@@ -10,10 +10,13 @@ use app\module\controller\admin\article\{
 };
 use app\module\controller\admin\Comments;
 use app\module\controller\admin\Other;
+use app\module\controller\Common;
 
 Route::group('api', function () {
 
-    Route::get('bai', [Other::class, 'import']);
+    Route::post('upload', [Common::class, 'upload']);
+
+    Route::post('bai', [Other::class, 'import']);
     // Route::get('bai2', [Pixiv::class, 'download']);
 
     Route::group('admin', function () {

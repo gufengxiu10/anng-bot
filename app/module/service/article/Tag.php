@@ -15,7 +15,7 @@ class Tag
      */
     public function lists()
     {
-        return Db::name('article_label')->select();
+        return Db::name('article_label')->get();
     }
 
     /**

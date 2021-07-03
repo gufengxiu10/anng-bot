@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Anng\lib\db;
 
+use Anng\lib\contract\db\QueryInterface;
 use Anng\lib\db\concern\WhereQuery;
 
-class Query
+class Query implements QueryInterface
 {
     use WhereQuery;
 
@@ -77,18 +78,17 @@ class Query
      * @author: ANNG
      * @return {*}
      */
-    public function get()
+    public function get(): Collection
     {
         return $this->connect->get($this);
     }
 
     /**
      * @name: 判断记录是否存在
-     * @param {*}
      * @author: ANNG
-     * @return {*}
+     * @return bool
      */
-    public function exists()
+    public function exists(): bool
     {
         return $this->connect->exists($this) > 0 ? true : false;
     }
@@ -128,7 +128,7 @@ class Query
         }
 
         $this->option['data'] = $data;
-        $this->connect->update($this);
+        return $this->connect->update($this);
     }
 
 

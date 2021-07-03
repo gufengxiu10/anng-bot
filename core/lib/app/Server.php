@@ -42,8 +42,10 @@ class Server
         $this->server->set([
             'worker_num'                => Config::get('app.work_num'),
             'task_enable_coroutine'     => true,
-            'task_worker_num'           => Config::get('server.task_worker_num')
-            // 'hook_flags' => SWOOLE_HOOK_ALL
+            'task_worker_num'           => Config::get('server.task_worker_num'),
+            'enable_static_handler'     => true,
+            'document_root'             => "/www/abot/storage",
+            'static_handler_locations'  => ['/public', '/app/images'],
         ]);
 
         //进程启动

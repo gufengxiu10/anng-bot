@@ -9,18 +9,14 @@ use Anng\lib\Collection as BaseCollection;
 
 class Collection extends BaseCollection
 {
+    // public function each(callable $func): self
+    // {
+    //     foreach ($this as $key => &$item) {
+    //         if ($func(self::make($item), $key) === false) {
+    //             break;
+    //         }
+    //     }
 
-    public function isEmpty()
-    {
-        return empty($this->items);
-    }
-
-    protected function convertToArray($data): array
-    {
-        if (empty($data)) {
-            return [];
-        }
-
-        return (array)$data;
-    }
+    //     return $this;
+    // }
 }

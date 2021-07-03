@@ -14,7 +14,7 @@ class Cate
      */
     public function lists()
     {
-        return Db::name('article_cate')->select();
+        return Db::name('article_cate')->get();
     }
 
     public function create($data)

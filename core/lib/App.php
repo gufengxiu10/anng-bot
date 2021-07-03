@@ -63,6 +63,7 @@ class App extends Container
             return $this->rootPath . $value;
         }
 
+        @mkdir($this->rootPath, 0777, true);
         return $this->rootPath;
     }
 
@@ -88,5 +89,10 @@ class App extends Container
     public function appPath()
     {
         return $this->rootPath('app' . DIRECTORY_SEPARATOR);
+    }
+
+    public function storagePath()
+    {
+        return $this->rootPath('storage' . DIRECTORY_SEPARATOR);
     }
 }

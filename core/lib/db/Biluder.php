@@ -129,7 +129,14 @@ class Biluder
                 if (is_null($value[2])) {
                     $t[] = "{$logic} {$value[0]} = {$value[1]}";
                 } else {
-                    $t[] .= "{$logic} {$value[0]} {$value[1]} " . (is_int($value[2]) ? $value[2] : "'{$value[2]}'");
+                    if (in_array($value[1], ['in', 'not in'])) {
+                        if (is_array($value[2])) {
+                            $value[2] = implode(',', $value[2]);
+                        }
+                        $t[] .= "{$logic} {$value[0]} in ({$value[2]}) ";
+                    } else {
+                        $t[] .= "{$logic} {$value[0]} {$value[1]} " . (is_int($value[2]) ? $value[2] : "'{$value[2]}'");
+                    }
                 }
             }
         }

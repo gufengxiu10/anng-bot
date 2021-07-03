@@ -11,3 +11,4 @@ public/upload
 /runtime
 /public
 !/public/index.php
+/storage

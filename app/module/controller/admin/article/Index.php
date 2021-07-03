@@ -29,7 +29,7 @@ class Index extends BaseController
      */
     public function info($id)
     {
-        return $this->success( $this->service(ArticleIndex::class)->info($id));
+        return $this->success($this->service(ArticleIndex::class)->info($id));
     }
 
     /**
@@ -63,22 +63,22 @@ class Index extends BaseController
      * @author: ANNG
      * @return {*}
      */
-    public function update($id)
+    public function update(RequestInterface $request, $id)
     {
         $this->service(ArticleIndex::class)->update($id, [
-            'title'         => Request::param('title'),
-            'subtitle'      => Request::param('subtitle'),
-            'cat_id'        => Request::param('cat_id', 0),
-            'is_original'   => Request::param('is_original', 0),
-            'is_comment'    => Request::param('is_comment', 0),
-            'is_password'   => Request::param('is_password', 0),
-            'password'      => Request::param('password'),
-            'is_release'    => Request::param('is_release', 0),
-            'author'        => Request::param('author'),
-            'url'           => Request::param('url'),
-            'tag_id'        => is_array(($tagId = Request::param('tag_id'))) ? implode(',', $tagId) : $tagId,
+            'title'         => $request->param('title'),
+            'subtitle'      => $request->param('subtitle'),
+            'cat_id'        => $request->param('cat_id', 0),
+            'is_original'   => $request->param('is_original', 0),
+            'is_comment'    => $request->param('is_comment', 0),
+            'is_password'   => $request->param('is_password', 0),
+            'password'      => $request->param('password'),
+            'is_release'    => $request->param('is_release', 0),
+            'author'        => $request->param('author'),
+            'url'           => $request->param('url'),
+            'tag_id'        => is_array(($tagId = $request->param('tag_id'))) ? implode(',', $tagId) : $tagId,
             'update_time'   => time(),
-            'content'       => Request::param('content', ''),
+            'content'       => $request->param('content', ''),
         ]);
 
         return $this->message('更新成功')->success();
