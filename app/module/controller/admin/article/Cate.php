@@ -2,6 +2,7 @@
 
 namespace app\module\controller\admin\article;
 
+use Anng\lib\contract\RequestInterface;
 use Anng\lib\facade\Container;
 use Anng\lib\facade\Request;
 use app\BaseController;
@@ -26,11 +27,9 @@ class Cate extends BaseController
      * @author: ANNG
      * @return {*}
      */
-    public function add()
+    public function add(RequestInterface $request)
     {
-        return $this->service(ArticleCate::class)->create([
-            'name' => Request::param('name'),
-        ]);
+        return $this->service(ArticleCate::class)->create($request);
     }
 
     /**
@@ -39,11 +38,9 @@ class Cate extends BaseController
      * @author: ANNG
      * @return {*}
      */
-    public function update($id)
+    public function update(RequestInterface $request)
     {
-        return $this->service(ArticleCate::class)->update($id, [
-            'name' => Request::param('name'),
-        ]);
+        return $this->service(ArticleCate::class)->update($request);
     }
 
     /**
@@ -55,5 +52,6 @@ class Cate extends BaseController
     public function del($id)
     {
         # code...
+        
     }
 }

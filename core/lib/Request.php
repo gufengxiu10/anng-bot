@@ -39,7 +39,7 @@ class Request implements RequestInterface
                 $data = $this->param[$name] ??  null;
         }
 
-        if ($isEmpty === true && empty($data)) {
+        if ($isEmpty === true && $data != 0 && empty($data)) {
             return false;
         }
 

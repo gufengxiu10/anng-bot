@@ -3,6 +3,7 @@
 namespace app\module\controller\admin\article;
 
 use Anng\lib\contract\RequestInterface;
+use Anng\lib\facade\Db;
 use Anng\lib\facade\Request;
 use app\BaseController;
 use app\module\service\article\Index as ArticleIndex;
@@ -17,8 +18,7 @@ class Index extends BaseController
      */
     public function lists(RequestInterface $request)
     {
-        return $this->success($this->service(ArticleIndex::class)
-            ->lists($request));
+        return $this->success((new ArticleIndex)->lists($request));
     }
 
     /**
@@ -38,23 +38,10 @@ class Index extends BaseController
      * @author: ANNG
      * @return {*}
      */
-    public function add()
+    public function add(RequestInterface $request)
     {
-        return $this->service(ArticleIndex::class)->insert([
-            'title'         => Request::param('title'),
-            'subtitle'      => Request::param('subtitle'),
-            'cat_id'        => Request::param('cat_id'),
-            'is_original'   => Request::param('is_original'),
-            'is_comment'    => Request::param('is_comment'),
-            'is_password'   => Request::param('is_password'),
-            'password'      => Request::param('password'),
-            'is_release'    => Request::param('is_release'),
-            'author'        => Request::param('author'),
-            'url'           => Request::param('url'),
-            'content'       => Request::param('content'),
-            'create_time'   => time(),
-            'update_time'   => time(),
-        ]);
+        $this->service(ArticleIndex::class)->insert($request);
+        return $this->message('添加成功')->success();
     }
 
     /**
@@ -65,21 +52,7 @@ class Index extends BaseController
      */
     public function update(RequestInterface $request, $id)
     {
-        $this->service(ArticleIndex::class)->update($id, [
-            'title'         => $request->param('title'),
-            'subtitle'      => $request->param('subtitle'),
-            'cat_id'        => $request->param('cat_id', 0),
-            'is_original'   => $request->param('is_original', 0),
-            'is_comment'    => $request->param('is_comment', 0),
-            'is_password'   => $request->param('is_password', 0),
-            'password'      => $request->param('password'),
-            'is_release'    => $request->param('is_release', 0),
-            'author'        => $request->param('author'),
-            'url'           => $request->param('url'),
-            'tag_id'        => is_array(($tagId = $request->param('tag_id'))) ? implode(',', $tagId) : $tagId,
-            'update_time'   => time(),
-            'content'       => $request->param('content', ''),
-        ]);
+        $this->service(ArticleIndex::class)->update($id, $request);
 
         return $this->message('更新成功')->success();
     }
@@ -90,10 +63,20 @@ class Index extends BaseController
      * @author: ANNG
      * @return {*}
      */
-    public function setPassword($id)
+    public function setPassword(RequestInterface $request, $id)
     {
         return $this->service(ArticleIndex::class)->update($id, [
-            'password'      => Request::param('password')
+            'password'      => $request->param('password')
         ]);
+    }
+
+    public function del($id)
+    {
+        if (empty($id)) {
+            $this->message('参数错误')->error();
+        }
+
+        $res = Db::name('article')->where('id', $id)->delete();
+        return $this->success();
     }
 }

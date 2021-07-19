@@ -1,7 +1,5 @@
 <?php
 
-use Anng\lib\facade\App;
-
-$app = include_once './../core/Base.php';
+$app = include_once __DIR__ . '/../core/Base.php';
 
 $app->start();

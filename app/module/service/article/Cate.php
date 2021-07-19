@@ -2,7 +2,9 @@
 
 namespace app\module\service\article;
 
+use Anng\lib\contract\RequestInterface;
 use Anng\lib\facade\Db;
+use Exception;
 
 class Cate
 {
@@ -17,10 +19,23 @@ class Cate
         return Db::name('article_cate')->get();
     }
 
-    public function create($data)
+    public function info(int $id)
+    {
+        $info = Db::name('article_cate')
+            ->where('id', $id)
+            ->first();
+
+        if (!$info) {
+            throw new Exception('信息不存在');
+        }
+
+        return $info;
+    }
+
+    public function create(RequestInterface $request)
     {
         $info = Db::name('article_cate')->insert([
-            'name'          => $data['name'],
+            'name'          => $request->param('name'),
             'create_time'   => time(),
             'update_time'   => time()
         ]);
@@ -28,14 +43,21 @@ class Cate
         return $info;
     }
 
-    public function update($id, $data)
+    public function update(RequestInterface $request)
     {
-        $info = Db::name('article_cate')->where('id', $id)->update($data);
+        $info = Db::name('article_cate')
+            ->where('id', $request->param('id'))
+            ->update([
+                'name'          => $request->param('name'),
+                'update_time'   => time()
+            ]);
+
         return $info;
     }
 
     public function del(int $id)
     {
-        Db::name('article_cate')->where('id', $id)->delete();
+        $info = $this->info($id);
+        Db::name('article_cate')->where('id', $info->id)->delete();
     }
 }

@@ -15,7 +15,7 @@ use Swoole\Database\PDOProxy;
 
 abstract class Connect implements ConnectInterface
 {
-    protected $build;
+    public Biluder $build;
     public $tableFileInfo = [];
 
     public function __construct(protected PDOProxy $connect, protected Config $config)

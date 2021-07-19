@@ -44,6 +44,7 @@ class Server
             'task_enable_coroutine'     => true,
             'task_worker_num'           => Config::get('server.task_worker_num'),
             'enable_static_handler'     => true,
+            'package_max_length'        => 20 * 1024 * 1024,
             'document_root'             => "/www/abot/storage",
             'static_handler_locations'  => ['/public', '/app/images'],
         ]);

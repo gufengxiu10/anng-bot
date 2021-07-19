@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Anng\lib\db;
 
 use Anng\lib\contract\db\Connect;
+use Exception;
 
 class Biluder
 {
@@ -12,6 +13,8 @@ class Biluder
     protected $existsSql = "SELECT 1 FROM %TABLE% %WHERE% LIMIT 1";
     protected $insertSql = "INSERT INTO %TABLE% VALUES %DATA%";
     protected $updateSql = "UPDATE %TABLE% SET %DATA% %WHERE%";
+    protected $deleteSql = "DELETE FROM %TABLE% %WHERE% %LIMIT%";
+    // protected $deleteSql = "DELETE FROM %TABLE% %WHERE% %ORDER% %LIMIT%";
 
     public function __construct(protected Connect $connect)
     {
@@ -84,6 +87,30 @@ class Biluder
             implode(',', $data),
             "WHERE " . $where,
         ], $this->updateSql);
+    }
+
+    /**
+     * @name: 删除的语句
+     * @param {Query} $query
+     * @author: ANNG
+     * @return {*}
+     */
+    public function delete(Query $query)
+    {
+        if (empty($query->getOption('where'))) {
+            throw new Exception('至少有一个条件');
+        }
+
+        $where = $this->parseWhere($query);
+        if (empty($where)) {
+            return 'where not condition';
+        }
+
+        return str_replace(["%TABLE%", "%WHERE%", "%ORDER%", "%LIMIT%"], [
+            $this->parseTable($query),
+            "WHERE " . $where,
+            $this->parseLimit($query)
+        ], $this->deleteSql);
     }
 
     public function parseTable(Query $query)

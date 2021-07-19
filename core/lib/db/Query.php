@@ -69,7 +69,12 @@ class Query implements QueryInterface
             $this->where($this->connect->getPk($this->option['table']), $id);
         }
 
-        return $this->connect->get($this, true);
+        $data = $this->connect->get($this, true);
+        if ($data->isEmpty()) {
+            return '';
+        }
+
+        return $data;
     }
 
     /**
@@ -108,7 +113,7 @@ class Query implements QueryInterface
         $this->option['data'] = $data;
         $id = $this->connect->insert($this);
         $pk = $this->connect->getPk($this->option['table']);
-        return array_merge($this->option['data'], [$pk => $id]);
+        return Collection::make(array_merge($this->option['data'], [$pk => $id]));
     }
 
     public function insertGetId()
@@ -128,9 +133,16 @@ class Query implements QueryInterface
         }
 
         $this->option['data'] = $data;
-        return $this->connect->update($this);
+        return $this->connect->update($this) === false ? false : true;
     }
 
+    public function delete()
+    {
+        $res = $this->connect
+            ->send($this, fn () => $this->connect->build->delete($this))
+            ->rowCount();
+        return $res;
+    }
 
     public function __get($name)
     {
