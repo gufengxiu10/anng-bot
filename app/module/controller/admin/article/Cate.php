@@ -29,7 +29,7 @@ class Cate extends BaseController
      */
     public function add(RequestInterface $request)
     {
-        return $this->service(ArticleCate::class)->create($request);
+        return $this->success($this->service(ArticleCate::class)->create($request));
     }
 
     /**
@@ -38,9 +38,10 @@ class Cate extends BaseController
      * @author: ANNG
      * @return {*}
      */
-    public function update(RequestInterface $request)
+    public function update(RequestInterface $request, $id)
     {
-        return $this->service(ArticleCate::class)->update($request);
+        $this->service(ArticleCate::class)->update($request, $id);
+        return $this->success();
     }
 
     /**
@@ -51,7 +52,6 @@ class Cate extends BaseController
      */
     public function del($id)
     {
-        # code...
-        
+        return $this->success($this->service(ArticleCate::class)->del($id));
     }
 }

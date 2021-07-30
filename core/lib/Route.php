@@ -96,6 +96,12 @@ class Route
         return $this;
     }
 
+    public function patch($rule, $route = '')
+    {
+        $this->group->setRule($rule, $route, 'patch');
+        return $this;
+    }
+
     public function delete($rule, $route = '')
     {
         $this->group->setRule($rule, $route, 'delete');

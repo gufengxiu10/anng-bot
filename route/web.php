@@ -28,6 +28,8 @@ Route::group('api', function () {
             Route::get('/', [ArticleCate::class, 'lists']);
             Route::post('', [ArticleCate::class, 'add']);
             Route::put('/:id', [ArticleCate::class, 'update']);
+            Route::patch('/:id', [ArticleCate::class, 'update']);
+            Route::delete('/:id', [ArticleCate::class, 'del']);
         });
 
 

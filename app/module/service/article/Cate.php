@@ -43,10 +43,11 @@ class Cate
         return $info;
     }
 
-    public function update(RequestInterface $request)
+    public function update(RequestInterface $request, $id)
     {
+        $this->info((int)$id);
         $info = Db::name('article_cate')
-            ->where('id', $request->param('id'))
+            ->where('id', $id)
             ->update([
                 'name'          => $request->param('name'),
                 'update_time'   => time()
