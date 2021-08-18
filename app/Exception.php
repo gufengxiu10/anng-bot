@@ -11,6 +11,7 @@ class Exception extends LibException
 {
     public function render(Throwable $th)
     {
+        dump(1);
         return parent::render($th);
     }
 }

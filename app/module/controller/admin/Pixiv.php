@@ -4,79 +4,53 @@ declare(strict_types=1);
 
 namespace app\module\controller\admin;
 
-use Anng\lib\facade\App;
-use Anng\lib\facade\Cache;
-use Anng\lib\facade\Request;
-use Anng\lib\facade\Response;
-use Anng\plug\pixiv\module\Pixiviz;
+use Anng\lib\contract\RequestInterface;
+
 use app\BaseController;
-use app\task\Pixiv as TaskPixiv;
-use Swlib\Saber;
+use Swlib\SaberGM;
 
 class Pixiv extends BaseController
 {
-    public function lists()
+    public function lists(RequestInterface $request)
     {
-        $date = Request::param('date', date('Y-m-d', strtotime('-3 day')));
-        $data = (new Pixiviz)->day($date);
-        $origin = [];
-        foreach ($data['illusts'] as $key => $val) {
-            if ($val['page_count'] > 1) {
-                $originImg = $val['meta_pages'][0]['image_urls']['original'];
-            } else {
-                $originImg = $val['meta_single_page']['original_image_url'];
-            }
-
-            // $originImg = str_replace('https://i.pximg.net', '', $originImg);
-            $originImg = str_replace('https://i.pximg.net', 'https://pixiv-image-jp.pwp.link', $originImg);
-            $data = [
-                'img'   => $originImg,
-                'date'  => $date,
-                'data'   => $val
-            ];
-            array_push($origin, $data);
-        }
-
-        return $origin;
-    }
-
-    public function getImg()
-    {
-        Response::header('Content-type', 'image/png');
-        $url = Request::param('url');
-
-        if (!empty($url)) {
-            $key = 'img_' . $url;
-            if (Cache::has($key)) {
-                return Cache::get($key);
-            }
-
-            $client = Saber::create([
-                'headers' => [
-                    'referer'       => 'https://pixiviz.pwp.app/',
-                    'user-agent'    => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36 Edg/90.0.818.42'
-                ],
-                'timeout'   => 30
-            ]);
-
-            $imgRef = $client->get($url);
-            $body = $imgRef->getBody()->getContents();
-            Cache::set($key, $body, 3600);
-            return $body;
-        }
-        return file_get_contents(APp::rootPath('public/images/2017-09-04/64758647_p0.png'));
-    }
-
-    public function download()
-    {
-        $origin = $this->lists();
-        App::getServer()->task([
-            'name'      => TaskPixiv::class,
-            'action'    => 'download',
-            'param'     => $origin,
-            'finish'    => true
+        $date = $request->param('date', date('Y-m-d', strtotime('-2 day')));
+        $res = SaberGM::get('https://pixiviz-api-us.pwp.link/v1/illust/rank?mode=day&date=' . $date . '&page=1', [
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.73',
+                'Referer' => 'https://pixiviz.pwp.app/',
+                "Content-Type:" => 'application/x-www-form-urlencoded'
+            ],
+            'timeout' => 30
         ]);
-
-        return '完成';
+        dump('https://pixiviz-api-us.pwp.link/v1/illust/rank?mode=day&date=' . $date . '&page=1');
+        return $this->success($res->getParsedJsonArray());
+        dump($res->getParsedJsonArray());
     }
+
+    // public function getImg()
+    // {
+    //     Response::header('Content-type', 'image/png');
+    //     $url = Request::param('url');
+
+    //     if (!empty($url)) {
+    //         $key = 'img_' . $url;
+    //         if (Cache::has($key)) {
+    //             return Cache::get($key);
+    //         }
+
+    //         $client = Saber::create([
+    //             'headers' => [
+    //                 'referer'       => 'https://pixiviz.pwp.app/',
+    //                 'user-agent'    => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36 Edg/90.0.818.42'
+    //             ],
+    //             'timeout'   => 30
+    //         ]);
+
+    //         $imgRef = $client->get($url);
+    //         $body = $imgRef->getBody()->getContents();
+    //         Cache::set($key, $body, 3600);
+    //         return $body;
+    //     }
+    //     return file_get_contents(APp::rootPath('public/images/2017-09-04/64758647_p0.png'));
+    // }
 }

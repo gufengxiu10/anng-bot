@@ -52,6 +52,7 @@ class Cate extends BaseController
      */
     public function del($id)
     {
-        return $this->success($this->service(ArticleCate::class)->del($id));
+        $this->service(ArticleCate::class)->del($id);
+        return $this->success();
     }
 }
