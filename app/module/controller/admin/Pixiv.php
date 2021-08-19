@@ -14,7 +14,8 @@ class Pixiv extends BaseController
     public function lists(RequestInterface $request)
     {
         $date = $request->param('date', date('Y-m-d', strtotime('-2 day')));
-        $res = SaberGM::get('https://pixiviz-api-us.pwp.link/v1/illust/rank?mode=day&date=' . $date . '&page=1', [
+        $page = $request->param('page',1);
+        $res = SaberGM::get('https://pixiviz-api-us.pwp.link/v1/illust/rank?mode=day&date=' . $date . '&page=' . $page, [
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.73',
                 'Referer' => 'https://pixiviz.pwp.app/',
