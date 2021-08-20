@@ -17,6 +17,7 @@ use Anng\event\{
     Connect,
     Open,
     Task,
+    Websocket,
     websocket\Message as websocketMessage,
     websocket\Request as websocketRequest,
     WorkerStart
@@ -56,10 +57,13 @@ class Server
         //握手成功后调用
         $this->server->on('open', $this->ico(Open::class));
 
-        if (Config::get('app.server') == 'websocket') {
-            //接收客户端数据时触发
-            $this->server->on('message', $this->ico(websocketMessage::class));
-            $this->server->on('request', $this->ico(websocketRequest::class));
+        switch (Config::get('app.server')) {
+            case 'websocket':
+                $this->server->on('message', $this->ico(websocketMessage::class));
+                $this->server->on('request', $this->ico(websocketRequest::class));
+                break;
+            default:
+                $this->server->on('request', $this->ico(Websocket::class, 'request'));
         }
 
         $this->server->on('task', $this->ico(Task::class));

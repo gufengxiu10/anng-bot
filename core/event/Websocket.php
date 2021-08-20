@@ -33,6 +33,7 @@ class Websocket
     public function request(HttpRequest $request, Response $response)
     {
         try {
+            dump(10);
             FacadeRequest::send($request);
             FacadeResponse::send($response)->end(FacadeRoute::send(Container::get('request')))->clear();
             FacadeRequest::clear();

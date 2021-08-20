@@ -31,6 +31,7 @@ class Request extends EventRequest
         parent::run($request, $response);
         $context->push('request', (new LibRequest($request)));
         $context->push('response', $response);
+
         try {
             FacadeRoute::send($context->get('request'));
         } catch (Throwable $th) {
