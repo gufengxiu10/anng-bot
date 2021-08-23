@@ -6,7 +6,6 @@ use Anng\lib\Crontab;
 use Anng\lib\Env;
 use Anng\lib\Config;
 use Anng\lib\Connect;
-use Anng\lib\Facade;
 use Anng\lib\Redis;
 use Anng\lib\Db;
 use Anng\lib\Table;
@@ -17,6 +16,7 @@ use Anng\lib\contract\RequestInterface;
 use Anng\lib\Exception;
 use Anng\lib\Messages;
 use Anng\lib\Route;
+use Anng\utils\Context as UtilsContext;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
@@ -43,4 +43,4 @@ $container->bind([
 
 require_once 'Helper.php';
 
-return $container;
+$container->start();

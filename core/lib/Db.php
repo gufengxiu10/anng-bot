@@ -8,6 +8,7 @@ namespace Anng\lib;
 use Anng\lib\db\Config;
 use Anng\lib\db\Pool;
 use Anng\lib\db\pool\Mysql;
+use Anng\lib\db\Query;
 
 class Db
 {
