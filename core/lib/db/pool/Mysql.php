@@ -9,7 +9,7 @@ use PDO;
 use Swoole\Database\PDOConfig;
 use Swoole\Database\PDOPool;
 
-class Mysql extends Pool
+class Mysql
 {
     public function create()
     {
@@ -23,7 +23,6 @@ class Mysql extends Pool
                 PDO::ATTR_STRINGIFY_FETCHES => false,
                 PDO::ATTR_EMULATE_PREPARES => false
             ]);
-        $this->pool = new PDOPool($config);
-        return $this;
+        return new PDOPool($config);
     }
 }

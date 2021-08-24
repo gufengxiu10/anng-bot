@@ -6,7 +6,7 @@ namespace Anng\utils;
 
 use Swoole\Coroutine;
 
-final class Context
+class Context
 {
     protected static $pool = [];
 

@@ -2,8 +2,10 @@
 
 namespace Anng\event;
 
+use Anng\lib\contract\db\PoolInterface;
 use Anng\lib\db\connect\Mysql;
 use Anng\lib\facade\Annotations;
+use Anng\lib\facade\App;
 use Anng\lib\facade\Config;
 use Anng\lib\facade\Crontab;
 use Anng\lib\facade\Db;
@@ -17,7 +19,7 @@ class WorkerStart
     public function run(Server $server)
     {
         //创建连接池
-        Db::setConfig(Config::get('datebase'))->create();
+        App::get(PoolInterface::class)->create();
 
         //加载controller的全部注解
         Annotations::load()->run();

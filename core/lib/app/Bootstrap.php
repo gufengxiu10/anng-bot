@@ -23,6 +23,7 @@ class Bootstrap
         // $this->providerRegister();
         $this->routeLoad();
         $this->providerLoad();
+        $this->register();
     }
 
     /**
@@ -82,26 +83,10 @@ class Bootstrap
     }
 
     /**
-     * @name: 注册服务提供者
-     * @param {*}
-     * @author: ANNG
-     * @return {*}
+     * 注册相关类到全局上下文
      */
-    public function providerRegister()
+    private  function register()
     {
-        $prioviders = Config::get('app.provider');
-        foreach ($prioviders as $priovider) {
-            $redistered = new $priovider($this->app);
-
-            if (method_exists($redistered, 'register')) {
-                $redistered->register();
-            }
-        }
-    }
-
-    private  function register($priovider)
-    {
-        if ($this->app->getAlias($priovider)) {
-        }
+        
     }
 }

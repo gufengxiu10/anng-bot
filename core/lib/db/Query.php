@@ -2,20 +2,24 @@
 
 declare(strict_types=1);
 
-use Anng\lib\db\Connect;
+namespace Anng\lib\db;
+
+use Anng\lib\contract\AppInterface;
+use Anng\lib\contract\db\PoolInterface;
 
 class Query
 {
     private $connect;
 
-    public function __construct()
+    public function __construct(private AppInterface $app)
     {
-        // $this->connect = (new Connect());
+        $pool = $this->app->get(PoolInterface::class);
+        $this->connect = new Connect($pool);
     }
 
     public function name()
     {
-        # code...
+        return $this->connect->send('SELECT * FROM pixiv_article');
     }
 
     public function table()

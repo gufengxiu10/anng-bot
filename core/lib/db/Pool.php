@@ -4,19 +4,23 @@ declare(strict_types=1);
 
 namespace Anng\lib\db;
 
+use Anng\lib\contract\db\PoolInterface;
+use Anng\lib\db\pool\Mysql;
 use PDO;
 use Swoole\Database\PDOPool;
 
-abstract class Pool
+class Pool implements PoolInterface
 {
-    protected PDOPool $pool;
+    protected $pool;
 
     public function __construct()
     {
     }
 
-    abstract public function create();
-
+    public function create()
+    {
+        $this->pool = (new Mysql)->create();
+    }
 
     public function get()
     {

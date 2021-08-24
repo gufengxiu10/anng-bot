@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Anng\lib;
 
-use Anng\lib\reflection\ReflectionClass;
 use Closure;
 use Psr\Container\ContainerInterface;
+use ReflectionClass;
+use ReflectionMethod;
 
 class Container implements ContainerInterface
 {
@@ -123,7 +124,7 @@ class Container implements ContainerInterface
             return $this->instances[$abstract];
         }
 
-        $object = $this->inovkeClass($abstract, $vars);
+        $object = $this->invokeClass($abstract, $vars);
         $this->instances[$abstract] = $object;
         return $object;
     }
@@ -137,9 +138,64 @@ class Container implements ContainerInterface
      * @Date: 2021-01-26 15:27:03
      * @return {*}
      */
-    public function inovkeClass(string $class, $vars = [])
+    public function invokeClass(string $class, $vars = [])
     {
-        return (new ReflectionClass($class))->setConstructParam($vars)->instance();
+        $reflation = new ReflectionClass($class);
+        $param = [];
+        if ($construct = $reflation->getConstructor()) {
+            $param = $this->parseData($construct, $vars);
+        }
+
+        return !empty($param) ? $reflation->newInstanceArgs($param) : $reflation->newInstance();
+        // return (new ReflectionClass($class))->setConstructParam($vars)->instance();
+    }
+
+    /**
+     * @name: 参数解析
+     * @param {*} Type
+     * @author: ANNG
+     * @todo: 
+     * @Date: 2021-02-03 09:29:11
+     */
+    protected function parseData(ReflectionMethod $refl, array $args = []): array
+    {
+        $params = $refl->getParameters();
+        if (empty($params)) {
+            return [];
+        }
+
+        $data = [];
+        //重置数组指针
+        //用于判断数组键值是以自然数为键,如果是则按顺序赋值
+        $type = key($args) === 0 ? 1 : 0;
+        foreach ($params as $value) {
+            $paramName = $value->getName();
+            if (!is_null($value->getType())) {
+                $name = $value->getType()->getName();
+                //TODO::未处理匿名数据的回调
+                if (isset($args[$paramName])) {
+                    $data[] = $args[$paramName];
+                } else {
+                    if ($this->has($name)) {
+                        $data[] = $this->get($name);
+                    } else {
+                        $data[] = $this->instance($name, $args);
+                    }
+                }
+            } else {
+                if ($type == 1 && !empty($args)) {
+                    $data[] = array_shift($args);
+                } elseif ($type == 0 && isset($args[$paramName])) {
+                    $data[] = $args[$paramName];
+                } elseif ($value->isDefaultValueAvailable()) {
+                    $data[] = $value->getDefaultValue();
+                } else {
+                    throw new Exception('method param miss:' . $value->getName());
+                }
+            }
+        }
+
+        return $data;
     }
 
     public function clear($name)

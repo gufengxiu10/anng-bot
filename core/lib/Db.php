@@ -9,12 +9,17 @@ use Anng\lib\db\Config;
 use Anng\lib\db\Pool;
 use Anng\lib\db\pool\Mysql;
 use Anng\lib\db\Query;
+use Anng\lib\contract\AppInterface;
 
 class Db
 {
     public Pool|null $pool = null;
     public $config;
     protected $sql;
+
+    public function __construct(private AppInterface $app)
+    {
+    }
 
     public function create($class = Mysql::class)
     {
@@ -25,29 +30,9 @@ class Db
         return $this;
     }
 
-    /**
-     * @name: 设置数据库信息
-     * @param {*} string
-     * @param {*} string
-     * @author: ANNG
-     * @todo: 
-     * @Date: 2021-01-28 10:07:57
-     * @return {*}
-     */
-    public function setConfig(string|array $key, string|null $val = null): static
+    public function name(string $name)
     {
-        if (!$this->config) {
-            $this->config = new Config();
-        }
-
-        if (!is_null($val)) {
-            $this->config->set($key, $val);
-        } elseif (is_array($key)) {
-            foreach ($key as $k => $v) {
-                $this->config->set($k, $v);
-            }
-        }
-        return $this;
+        return (new Query($this->app))->name($name);
     }
 
     public function __call($method, $args = [])

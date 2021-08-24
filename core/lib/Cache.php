@@ -15,7 +15,6 @@ abstract class Cache implements CacheInterface
 
     /**
      * 从缓存中取出值
-     *
      * @param string $key     该项在缓存中唯一的key值
      * @param mixed  $default key不存在时，返回的默认值
      * @return mixed 从缓存中返回的值，或者是不存在时的默认值
