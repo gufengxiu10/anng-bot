@@ -36,5 +36,6 @@ class Pool implements PoolInterface
 
     public function put($connect)
     {
+        $this->pool->put($connect);
     }
 }

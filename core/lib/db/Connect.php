@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Anng\lib\db;
 
 use Closure;
+use PDO;
 use PDOException;
 
 class Connect
@@ -46,5 +47,23 @@ class Connect
             dump($th->getMessage() . '|' . $sql);
             throw new \Exception($th->getMessage());
         }
+    }
+
+
+    public function getAll($query, $sql = null)
+    {
+        $statement = $this->send($query, $sql);
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getOne()
+    {
+        # code...
+    }
+
+    public function __destruct()
+    {
+        $this->pool->put($this->connect);
+        dump(10);
     }
 }
