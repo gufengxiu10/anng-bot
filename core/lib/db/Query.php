@@ -6,13 +6,17 @@ namespace Anng\lib\db;
 
 use Anng\lib\contract\AppInterface;
 use Anng\lib\contract\db\PoolInterface;
+use Anng\lib\contract\db\QueryInterface;
+use Illuminate\Database\Connection;
 
-class Query
+class Query implements QueryInterface
 {
     private $connect;
 
     //表名
     private string $table;
+
+    private string $alias;
 
     //获得指定列
     private array $field;
@@ -27,6 +31,7 @@ class Query
     {
         $pool = $this->app->get(PoolInterface::class);
         $this->connect = new Connect($pool);
+        $this->parse = new Parse($this);
     }
 
     public function name()
@@ -37,7 +42,7 @@ class Query
     /**
      * 设置表名
      */
-    public function table(string $name): static
+    public function table(string $name)
     {
         $this->table = $name;
         return $this;
@@ -55,7 +60,7 @@ class Query
     /**
      * 条件
      */
-    public function where(string|callable|array $name, string $condition = null, $value = null): static
+    public function where(string|callable|array $name, mixed $condition = null, $value = null): static
     {
         if (is_array($name)) {
             $where = [];
@@ -84,6 +89,12 @@ class Query
 
     public function get(): array
     {
+        dump($this->parse->select());
         return [];
+    }
+
+    public function getOption($name)
+    {
+        return $this->$name;
     }
 }

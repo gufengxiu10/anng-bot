@@ -35,6 +35,11 @@ class Db
         return (new Query($this->app))->name($name);
     }
 
+    public function table(string $name)
+    {
+        return (new Query($this->app))->table($name);
+    }
+
     public function __call($method, $args = [])
     {
         $connect = $this->pool->get();

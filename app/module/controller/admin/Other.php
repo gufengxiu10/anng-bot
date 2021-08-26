@@ -11,6 +11,6 @@ class Other extends BaseController
 {
     public function import()
     {
-        dump(Db::name('a'));
+        dump(Db::table('pixiv_article')->where('title', 10)->get());
     }
 }

@@ -11,5 +11,7 @@ interface QueryInterface
      * @author: ANNG
      * @return bool
      */
-    public function exists(): bool;
+    // public function exists(): bool;
+
+    public function getOption($name);
 }

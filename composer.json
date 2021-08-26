@@ -34,6 +34,8 @@
         "ramsey/collection": "^1.1",
         "illuminate/contracts": "^8.48",
         "illuminate/collections": "^8.48",
-        "illuminate/support": "^8.48"
+        "illuminate/support": "^8.48",
+        "illuminate/database": "^8.56",
+        "catfan/medoo": "^2.1"
     }
 }
